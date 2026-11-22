@@ -337,7 +337,7 @@ export function buildScene(): SceneParts {
   const sun = new DirectionalLight(0xfff1dc, 2.3);
   sun.position.set(9, 16, 5);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 50 });
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.03;

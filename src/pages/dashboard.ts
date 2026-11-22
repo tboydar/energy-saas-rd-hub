@@ -203,30 +203,37 @@ export function mount(root: HTMLElement, route: Route): () => void {
   // 3D 與圖表都等首屏畫完、瀏覽器有空時才載入
   const idle = (fn: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 200));
   idle(() => {
-    void loadFactory().then(({ createFactory }) => {
+    void loadFactory().then(async ({ createFactory }) => {
       if (disposed) return;
-      const msg = $('#stage-msg', root)!;
-      try {
-        factory = createFactory({ container: $('#stage', root)!, labelLayer: $('#stage-labels', root)!, labels: labels(), lowFx: store.prefs.lowFx, onSelect: select });
-        msg.remove();
-        applyTick(engine.latest);
-        if (selected) factory.focus(selected);
-      } catch {
-        msg.textContent = t('dash.no3d');
-      }
+      const made = await createFactory({
+        container: $('#stage', root)!, labelLayer: $('#stage-labels', root)!, labels: labels(), ariaLabel: t('dash.canvasLabel'), lowFx: store.prefs.lowFx, onSelect: select,
+        onAutoLowFx: () => {
+          store.setPrefs({ lowFx: true });
+          const box = $<HTMLInputElement>('#lowfx', root);
+          if (box) box.checked = true;
+        },
+      });
+      // 初始化是非同步的：如果使用者在這段時間已經離開這一頁，就直接釋放
+      if (disposed) { made.dispose(); return; }
+      factory = made;
+      $('#stage-msg', root)?.remove();
+      applyTick(engine.latest);
+      if (selected) factory.focus(selected);
     }).catch(() => { const msg = $('#stage-msg', root); if (msg) msg.textContent = t('dash.no3d'); });
   });
   idle(() => {
-    void loadCharts().then(({ trendChart }) => {
-      if (disposed) return;
+    void loadCharts().then(async ({ trendChart }) => {
       const weeks = store.state.metrics.map((m) => m.week);
-      root.querySelectorAll<HTMLCanvasElement>('canvas[data-metric]').forEach((canvas) => {
+      // 一次只建一張圖，中間讓出主執行緒，七張圖就不會擠成一個長任務
+      for (const canvas of Array.from(root.querySelectorAll<HTMLCanvasElement>('canvas[data-metric]'))) {
+        if (disposed) return;
         const key = canvas.dataset.metric as MetricKey;
         charts.add(trendChart(canvas, {
           labels: weeks, values: store.state.metrics.map((m) => m[key]), name: tx(METRIC_META[key].label), unit: tx(METRIC_META[key].unit),
           kind: BAR_METRICS.includes(key) ? 'bar' : 'line',
         }));
-      });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
     });
   });
 

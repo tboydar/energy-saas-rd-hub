@@ -11,8 +11,12 @@ export interface FactoryOptions {
   container: HTMLElement;
   labelLayer: HTMLElement;
   labels: FactoryLabel[];
+  /** 給螢幕報讀器的場景說明。 */
+  ariaLabel: string;
   lowFx: boolean;
   onSelect(id: DeviceId | null): void;
+  /** 場景因為裝置太慢而自動切到「降低特效」時通知頁面（用來同步核取方塊）。 */
+  onAutoLowFx?(): void;
 }
 export interface FactoryHandle {
   focus(id: DeviceId | null): void;
@@ -40,17 +44,35 @@ const HOME_OFFSET = new Vector3(20, 17, 20);
 const HOME_TARGET = new Vector3(0, 0.3, 0);
 const BASE_SPEED = 0.95;
 
-export function createFactory(opts: FactoryOptions): FactoryHandle {
+/** 把主執行緒讓出來一下，讓瀏覽器有機會處理輸入與繪製。 */
+const pause = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+const mark = (name: string, since: number) => performance.measure(`factory:${name}`, { start: since, end: performance.now() });
+
+/**
+ * 建立 3D 場景。初始化很重（建立 WebGL context、建模、編譯 shader），
+ * 所以拆成幾段、每段之間讓出主執行緒，避免出現一個卡住畫面數百毫秒的長任務。
+ */
+export async function createFactory(opts: FactoryOptions): Promise<FactoryHandle> {
   const { container, labelLayer } = opts;
   let lowFx = opts.lowFx;
 
+  let t = performance.now();
   const renderer = new WebGLRenderer({ antialias: !lowFx, alpha: true, powerPreference: 'high-performance' });
   renderer.shadowMap.enabled = true;
+  // 場景大多是靜止的：陰影貼圖不必每幀重算，改成每隔幾幀更新一次（見 frame()）。
+  renderer.shadowMap.autoUpdate = false;
   renderer.domElement.className = 'stage-canvas';
-  container.prepend(renderer.domElement);
+  renderer.domElement.setAttribute('role', 'img');
+  renderer.domElement.setAttribute('aria-label', opts.ariaLabel);
+  mark('renderer', t);
+  await pause();
 
+  t = performance.now();
   const parts = buildScene();
   const { scene } = parts;
+  mark('scene', t);
+  await pause();
+  container.prepend(renderer.domElement);
   const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
   camera.position.copy(HOME_TARGET).add(HOME_OFFSET);
 
@@ -328,6 +350,8 @@ export function createFactory(opts: FactoryOptions): FactoryHandle {
   let raf = 0;
   let last = 0;
   let frameNo = 0;
+  let rendered = 0;
+  let cost = 0;
   let onScreen = true;
   let disposed = false;
   function frame(now: number): void {
@@ -336,10 +360,19 @@ export function createFactory(opts: FactoryOptions): FactoryHandle {
     if (lowFx && frameNo++ % 2) return;
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
+    const began = performance.now();
     update(dt, now / 1000);
     controls.update();
+    // 陰影每 6 幀更新一次：移動的方塊陰影幾乎看不出差別，卻省下大部分的陰影計算。
+    if (!lowFx && rendered++ % 6 === 0) renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, camera);
     placeLabels();
+    // 自動降載：連續量到每幀都很慢（沒有 GPU 或裝置較舊）就自動切到「降低特效」。
+    cost += (performance.now() - began - cost) * 0.1;
+    if (!lowFx && rendered > 40 && cost > 26) {
+      setLowFx(true);
+      opts.onAutoLowFx?.();
+    }
   }
   function sync(): void {
     const shouldRun = !disposed && onScreen && !document.hidden;
@@ -363,11 +396,23 @@ export function createFactory(opts: FactoryOptions): FactoryHandle {
   function setLowFx(low: boolean): void {
     lowFx = low;
     parts.sun.castShadow = !low;
+    renderer.shadowMap.needsUpdate = true;
     resize();
   }
 
   setLabels(opts.labels);
   setLowFx(lowFx);
+  // 先把 shader 編譯好（支援平行編譯的瀏覽器不會卡住主執行緒），再開始動畫迴圈。
+  t = performance.now();
+  update(0, 0);
+  await renderer.compileAsync(scene, camera);
+  mark('compile', t);
+  await pause();
+  t = performance.now();
+  renderer.shadowMap.needsUpdate = true;
+  renderer.render(scene, camera);
+  placeLabels();
+  mark('first-frame', t);
   sync();
 
   return {

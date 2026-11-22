@@ -42,10 +42,10 @@ export function sprintStats(state: AppState, sprint: Sprint): SprintStats {
   const days = workdays(sprint.start, sprint.end);
   const n = days.length;
   const capacity = state.members.filter((m) => m.active).reduce((s, m) => s + m.capacity, 0);
-  if (sprint.status !== 'active') {
+  if (sprint.status === 'done') {
     const ideal = Array.from({ length: n + 1 }, (_, i) => Math.round(sprint.committed * (1 - i / n) * 10) / 10);
     const actual: (number | null)[] = Array.from({ length: n + 1 }, (_, i) => sprint.burndown[i] ?? null);
-    return { sprint, days, todayIndex: sprint.status === 'done' ? n : 0, committed: sprint.committed, done: sprint.completed, inReview: 0,
+    return { sprint, days, todayIndex: n, committed: sprint.committed, done: sprint.completed, inReview: 0,
       remaining: sprint.committed - sprint.completed, capacity, ideal, actual, gap: 0 };
   }
   const tasks = sprintTasks(state, sprint.id);
@@ -53,7 +53,8 @@ export function sprintStats(state: AppState, sprint: Sprint): SprintStats {
   const done = tasks.filter((t) => t.status === 'done').reduce((s, t) => s + t.points, 0);
   const inReview = tasks.filter((t) => t.status === 'review').reduce((s, t) => s + t.points, 0);
   const remaining = committed - done;
-  const todayIndex = Math.min(n, Math.max(1, workdays(sprint.start, DEMO_TODAY).length - 1));
+  // 還沒開始的（規劃中）Sprint 停在第 0 天
+  const todayIndex = sprint.start > DEMO_TODAY ? 0 : Math.min(n, Math.max(1, workdays(sprint.start, DEMO_TODAY).length - 1));
   const ideal = Array.from({ length: n + 1 }, (_, i) => Math.round(committed * (1 - i / n) * 10) / 10);
   const actual: (number | null)[] = Array.from({ length: n + 1 }, (_, i) => {
     if (i < todayIndex) return sprint.burndown[i] ?? null;

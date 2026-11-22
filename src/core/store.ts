@@ -69,6 +69,12 @@ export const store = {
   },
   /** 回到初始資料（語言與特效偏好保留）。 */
   reset(): void {
+    try {
+      // 流程圖被拖曳過的版面也一併還原
+      Object.keys(localStorage).filter((k) => k.startsWith('esrd:flow:')).forEach((k) => localStorage.removeItem(k));
+    } catch {
+      // localStorage 不可用時沒有東西要清
+    }
     state = buildInitialState();
     save(STATE_KEY, state);
     emit('reset');

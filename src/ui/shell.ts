@@ -16,23 +16,22 @@ import { initials } from './widgets';
 export type PageMount = (root: HTMLElement, route: Route) => (() => void) | void;
 interface PageDef { path: string; perm: Perm; nav: I18nKey; icon: string; load: () => Promise<{ mount: PageMount }> }
 
-const soon = () => import('../pages/soon');
 const PAGES: PageDef[] = [
   // 總覽是預設頁，直接打包進主程式；其餘頁面各自切成獨立 chunk，點到才下載。
   { path: '/dashboard', perm: 'page.dashboard', nav: 'nav.dashboard', icon: 'dashboard', load: async () => ({ mount: mountDashboard }) },
-  { path: '/team', perm: 'page.team', nav: 'nav.team', icon: 'team', load: soon },
-  { path: '/projects', perm: 'page.projects', nav: 'nav.projects', icon: 'projects', load: soon },
-  { path: '/governance', perm: 'page.governance', nav: 'nav.governance', icon: 'governance', load: soon },
-  { path: '/systems', perm: 'page.systems', nav: 'nav.systems', icon: 'systems', load: soon },
-  { path: '/collab', perm: 'page.collab', nav: 'nav.collab', icon: 'collab', load: soon },
-  { path: '/rbac', perm: 'page.rbac', nav: 'nav.rbac', icon: 'rbac', load: soon },
-  { path: '/about', perm: 'page.about', nav: 'nav.about', icon: 'about', load: soon },
+  { path: '/team', perm: 'page.team', nav: 'nav.team', icon: 'team', load: () => import('../pages/team') },
+  { path: '/projects', perm: 'page.projects', nav: 'nav.projects', icon: 'projects', load: () => import('../pages/projects') },
+  { path: '/governance', perm: 'page.governance', nav: 'nav.governance', icon: 'governance', load: () => import('../pages/governance') },
+  { path: '/systems', perm: 'page.systems', nav: 'nav.systems', icon: 'systems', load: () => import('../pages/systems') },
+  { path: '/collab', perm: 'page.collab', nav: 'nav.collab', icon: 'collab', load: () => import('../pages/collab') },
+  { path: '/rbac', perm: 'page.rbac', nav: 'nav.rbac', icon: 'rbac', load: () => import('../pages/rbac') },
+  { path: '/about', perm: 'page.about', nav: 'nav.about', icon: 'about', load: () => import('../pages/about') },
 ];
 
 const LOGO = raw('<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 6.2v12.6L16 28 5 21.8V9.2z" fill="#ffc83d"/><path d="M16 15.4l11-6.2v12.6L16 28z" fill="#f0633d"/><path d="M16 15.4L5 9.2v12.6L16 28z" fill="#d9a520"/></svg>');
 
 export function mountShell(app: HTMLElement): void {
-  setHtml(app, html`<div class="shell"><aside class="side" id="side"></aside><div class="main"><header class="top" id="top"></header><main id="view" tabindex="-1"></main></div></div>`);
+  setHtml(app, html`<div class="shell"><aside class="sidebar" id="side"></aside><div class="main"><header class="topbar" id="top"></header><main id="view" tabindex="-1"></main></div></div>`);
   const side = $('#side', app)!;
   const top = $('#top', app)!;
   const view = $('#view', app)!;
@@ -44,7 +43,7 @@ export function mountShell(app: HTMLElement): void {
       <nav class="nav" aria-label="${t('nav.label')}">
         ${PAGES.filter((p) => can(p.perm)).map((p) => html`<a href="${href(p.path)}" class="${p.path === active ? 'is-active' : ''}" ${p.path === active ? raw('aria-current="page"') : ''} title="${t(p.nav)}">${icon(p.icon)}<span>${t(p.nav)}</span></a>`)}
       </nav>
-      <p class="side-foot">${t('app.fictional')}</p>`);
+      <p class="sidebar-foot">${t('app.fictional')}</p>`);
   }
 
   function renderTop(): void {
@@ -53,7 +52,7 @@ export function mountShell(app: HTMLElement): void {
     const incident = activeIncident(store.state);
     setHtml(top, html`
       ${incident ? raw('<div class="hazard" aria-hidden="true"></div>') : ''}
-      <div class="top-row">
+      <div class="topbar-row">
         <div class="who">
           <span class="avatar" style="--h:${ROLES.indexOf(role) * 62 + 20}" aria-hidden="true">${initials(who.name)}</span>
           <div class="who-text"><b>${tx(who.name)}</b><span>${tx(who.title)}</span></div>
@@ -73,6 +72,7 @@ export function mountShell(app: HTMLElement): void {
 
   let cleanup: (() => void) | void;
   let token = 0;
+  let lastPath = '';
   async function show(): Promise<void> {
     const route = currentRoute();
     const def = PAGES.find((p) => p.path === route.path);
@@ -94,6 +94,8 @@ export function mountShell(app: HTMLElement): void {
     const mod = await def.load();
     if (mine !== token) return; // 載入期間使用者又切到別頁
     view.replaceChildren();
+    if (route.path !== lastPath) window.scrollTo(0, 0);
+    lastPath = route.path;
     cleanup = mod.mount(view, route);
   }
 

@@ -119,7 +119,8 @@ export function radarChart(canvas: HTMLCanvasElement, labels: string[], values: 
   });
 }
 
-export interface LiveChart { push(label: string, value: number, anomaly: boolean): void; destroy(): void }
+export interface LivePoint { label: string; value: number; anomaly: boolean }
+export interface LiveChart { push(point: LivePoint): void; load(points: LivePoint[]): void; destroy(): void }
 
 /** 即時折線圖：每秒推一個點，只保留最近 size 個；異常點用紅色大點標出。 */
 export function liveChart(canvas: HTMLCanvasElement, name: string, unit: string, size = 60): LiveChart {
@@ -137,12 +138,13 @@ export function liveChart(canvas: HTMLCanvasElement, name: string, unit: string,
       scales: { x: { ...xAxis, ticks: { maxRotation: 0, maxTicksLimit: 6 } }, y: { grid: hair, border: { display: false }, ticks: { maxTicksLimit: 4, padding: 6 } } },
     },
   });
+  const add = (p: LivePoint) => {
+    labels.push(p.label); data.push(p.value); flags.push(p.anomaly);
+    if (labels.length > size) { labels.shift(); data.shift(); flags.shift(); }
+  };
   return {
-    push(label, value, anomaly) {
-      labels.push(label); data.push(value); flags.push(anomaly);
-      if (labels.length > size) { labels.shift(); data.shift(); flags.shift(); }
-      chart.update('none');
-    },
+    push(point) { add(point); chart.update('none'); },
+    load(points) { points.forEach(add); chart.update('none'); },
     destroy: () => chart.destroy(),
   };
 }

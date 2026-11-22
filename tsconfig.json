@@ -17,7 +17,8 @@
     "noEmit": true,
     "types": [
       "vite/client"
-    ]
+    ],
+    "jsx": "react-jsx"
   },
   "include": [
     "src"

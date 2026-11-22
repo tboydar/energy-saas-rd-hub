@@ -14,7 +14,8 @@ const STAGE: Record<string, { zh: string; en: string }> = {
 
 export function minutesToRecover(incident: Incident): number | null {
   if (!incident.recoveredAt) return null;
-  return Math.max(1, Math.round((Date.parse(incident.recoveredAt) - Date.parse(incident.startedAt)) / 60000));
+  const ms = Date.parse(incident.recoveredAt) - Date.parse(incident.startedAt);
+  return Math.max(1, Math.round(ms / (incident.compressed ? 1000 : 60000)));
 }
 
 export function postmortemTemplate(state: AppState, incident: Incident, lang: Lang): string {
@@ -33,7 +34,7 @@ export function postmortemTemplate(state: AppState, incident: Incident, lang: La
       `- 嚴重度：${incident.severity}`, `- 受影響設備：${device?.tag ?? ''} ${device?.role.zh ?? ''}`,
       `- 事件指揮官：${incident.commander ? who(incident.commander) : '未指派'}`, `- 復原時間：${mttr ?? '—'} 分鐘`, '',
       '## 影響', incident.impact.zh, '',
-      '## 時間軸', '| 時間 | 事件 | 處理人 |', '| --- | --- | --- |', lines, '',
+      '## 時間軸', ...(incident.compressed ? ['（Demo 時間壓縮：1 秒 = 1 分鐘）'] : []), '| 時間 | 事件 | 處理人 |', '| --- | --- | --- |', lines, '',
       '## 根本原因', incident.rootCause.zh, '',
       '## 處置方式', incident.mitigation.zh, '',
       '## 做得好的地方', '- 告警在第一時間觸發並指派到人', '- （待補）', '',
@@ -47,7 +48,7 @@ export function postmortemTemplate(state: AppState, incident: Incident, lang: La
     `- Severity: ${incident.severity}`, `- Affected component: ${device?.tag ?? ''} ${device?.role.en ?? ''}`,
     `- Incident commander: ${incident.commander ? who(incident.commander) : 'Unassigned'}`, `- Time to restore: ${mttr ?? '—'} min`, '',
     '## Impact', incident.impact.en, '',
-    '## Timeline', '| Time | Event | Owner |', '| --- | --- | --- |', lines, '',
+    '## Timeline', ...(incident.compressed ? ['(Demo time compression: 1 second = 1 minute)'] : []), '| Time | Event | Owner |', '| --- | --- | --- |', lines, '',
     '## Root cause', incident.rootCause.en, '',
     '## Resolution', incident.mitigation.en, '',
     '## What went well', '- The alert fired promptly and reached an owner', '- (to be added)', '',

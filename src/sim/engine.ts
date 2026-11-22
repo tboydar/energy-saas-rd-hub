@@ -25,7 +25,7 @@ export interface Tick {
 
 const IDS: DeviceId[] = ['solar', 'truck', 'press', 'tank', 'substation', 'console'];
 const HISTORY = 120;
-const ALARM_HOLD = 6;
+const ALARM_HOLD = 4;
 
 type Listener = (tick: Tick) => void;
 

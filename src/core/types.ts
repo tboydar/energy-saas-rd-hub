@@ -113,6 +113,8 @@ export interface Incident {
   recoveredAt?: string;
   timeline: { stage: IncidentStage; at: string; by: string }[];
   postmortem: string;
+  /** Demo 內模擬的事件會壓縮時間：1 秒算 1 分鐘，復原時間的數字才有意義。 */
+  compressed?: boolean;
 }
 
 export interface WeekMetric {
