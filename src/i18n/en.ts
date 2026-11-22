@@ -1,0 +1,140 @@
+import type { I18nKey } from './zh';
+
+// English dictionary. Record<I18nKey, string> makes a missing translation a compile error.
+
+export const en: Record<I18nKey, string> = {
+  // app
+  "app.name": "Energy SaaS R&D Hub",
+  "app.short": "R&D Hub",
+  "app.product": "Energy SaaS",
+  "app.fictional": "All data is fictional",
+
+  // nav
+  "nav.dashboard": "Overview",
+  "nav.team": "Team",
+  "nav.projects": "Projects",
+  "nav.governance": "Governance",
+  "nav.systems": "Systems & incidents",
+  "nav.collab": "Collaboration",
+  "nav.rbac": "Permissions",
+  "nav.about": "About this demo",
+  "nav.label": "Main menu",
+
+  // top
+  "top.role": "Signed in as",
+  "top.lang": "Language",
+  "top.reset": "Reset demo data",
+  "top.resetTitle": "Reset demo data?",
+  "top.resetBody": "Everything returns to its initial state and changes made in this browser are lost. Language and effects settings are kept.",
+  "top.resetDone": "Demo data reset",
+  "top.incident": "Open incident",
+  "top.viewIncident": "View incident",
+
+  // role
+  "role.manager": "Engineering Manager",
+  "role.techlead": "Tech Lead",
+  "role.engineer": "Engineer",
+  "role.pmcs": "PM / CS",
+  "role.admin": "Administrator",
+
+  // common
+  "common.cancel": "Cancel",
+  "common.save": "Save",
+  "common.close": "Close",
+  "common.copy": "Copy",
+  "common.copied": "Copied to clipboard",
+  "common.saved": "Saved",
+  "common.locked": "\"{role}\" lacks this permission: {perm}",
+  "common.none": "None",
+  "common.unassigned": "Unassigned",
+  "common.pts": "pts",
+  "common.all": "All",
+
+  // denied
+  "denied.title": "This role cannot open this page",
+  "denied.body": "You are signed in as \"{role}\", which cannot view \"{page}\". Switch roles above, or open the permission matrix to see what each role can do.",
+  "denied.back": "Back to overview",
+
+  // soon
+  "soon.title": "This page is under construction",
+  "soon.body": "The first cut covers the shell, role switching and the overview. This page arrives in the next version.",
+
+  // notfound
+  "notfound.title": "Page not found",
+
+  // perm
+  "perm.page.dashboard": "View: Overview",
+  "perm.page.team": "View: Team",
+  "perm.page.projects": "View: Projects",
+  "perm.page.governance": "View: Governance",
+  "perm.page.systems": "View: Systems & incidents",
+  "perm.page.collab": "View: Collaboration",
+  "perm.page.rbac": "View: Permissions",
+  "perm.page.about": "View: About",
+  "perm.team.private": "See 1:1s, performance and growth plans",
+  "perm.oneonone.write": "Write 1:1 notes and feedback",
+  "perm.hiring.manage": "Manage hiring",
+  "perm.member.manage": "Manage members and roles",
+  "perm.task.assign": "Assign any task",
+  "perm.task.manageSquad": "Manage own squad's tasks",
+  "perm.task.updateOwn": "Update own task status",
+  "perm.standup.write": "Post daily standup",
+  "perm.sprint.plan": "Plan sprints",
+  "perm.okr.edit": "Edit OKRs",
+  "perm.adr.write": "Write ADRs",
+  "perm.review.decide": "Decide code reviews",
+  "perm.pipeline.run": "Run and retry pipelines",
+  "perm.release.approve": "Approve production releases",
+  "perm.incident.manage": "Manage incidents",
+  "perm.request.create": "Submit requests",
+  "perm.request.triage": "Evaluate requests and convert to tasks",
+  "perm.report.generate": "Generate weekly reports",
+  "perm.rbac.edit": "Edit the permission matrix",
+
+  // dash
+  "dash.lead": "This week's delivery pace and quality for the engineering team, plus live health of the data platform.",
+  "dash.dora": "The four DORA metrics",
+  "dash.delivery": "Delivery and quality",
+  "dash.vsLast": "vs last week",
+  "dash.factory": "Energy data factory",
+  "dash.factoryHint": "Drag to rotate and scroll to zoom. Click a device or its tag to see live data.",
+  "dash.legend": "Raw cubes are raw power data, the press is the processing pipeline, and glowing cubes are analytics and reports. Belt speed follows throughput.",
+  "dash.lowFx": "Reduce effects",
+  "dash.resetView": "Reset view",
+  "dash.zoomIn": "Zoom in",
+  "dash.zoomOut": "Zoom out",
+  "dash.loading3d": "Loading the 3D scene…",
+  "dash.no3d": "WebGL is unavailable in this browser, so the 3D scene did not load. Everything else still works.",
+  "dash.scale": "Model scale 1:200",
+  "dash.pick": "Pick a device",
+  "dash.pickHint": "Each device stands for one part of the data platform. Click the model or a tag: the camera glides over and this panel shows live data, the owning squad and related tasks.",
+  "dash.throughput": "Throughput",
+  "dash.latency": "Latency",
+  "dash.error": "Error rate",
+  "dash.owner": "Owning squad",
+  "dash.lastDeploy": "Last deployment",
+  "dash.deployedBy": "{date} by {name}",
+  "dash.related": "Related tasks",
+  "dash.noTasks": "No open related tasks.",
+  "dash.ok": "Healthy",
+  "dash.anomaly": "Anomaly detected",
+  "dash.incident": "Incident in progress",
+  "dash.inject": "Inject anomaly",
+  "dash.injected": "Injected a 4-second anomaly into {tag}. Watch for the red light in the 3D scene",
+  "dash.deselect": "Deselect",
+  "dash.trends": "12-week trends",
+  "dash.liveIngest": "Ingest throughput",
+  "dash.liveLatency": "End-to-end latency",
+  "dash.liveError": "Average error rate",
+  "dash.today": "Points ingested today",
+  "dash.perDay": "Projected per day",
+  "dash.perSec": "pts/s",
+  "dash.points": "points",
+  "dash.openSystems": "Open platform view and incidents",
+
+  // status
+  "status.backlog": "Backlog",
+  "status.progress": "In Progress",
+  "status.review": "Review",
+  "status.done": "Done",
+};

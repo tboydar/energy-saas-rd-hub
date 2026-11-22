@@ -1,0 +1,86 @@
+import { buildInitialState, STATE_VERSION } from '../mock';
+import { setLang } from './i18n';
+import type { AppState, Prefs } from './types';
+
+// 單一資料來源。所有變更都走 store.update()：改資料 → 存 localStorage → 通知畫面。
+// 所以重新整理後資料還在；按「重設 Demo 資料」則用同一個 seed 重建。
+
+const STATE_KEY = 'esrd:state:v1';
+const PREFS_KEY = 'esrd:prefs:v1';
+
+export type ChangeKind = 'state' | 'prefs' | 'reset';
+type Listener = (kind: ChangeKind) => void;
+
+function load<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function save(key: string, value: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // 無痕模式或容量已滿時 localStorage 會丟例外：這時資料只留在記憶體，Demo 仍可操作。
+  }
+}
+
+function defaultPrefs(): Prefs {
+  const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return { role: 'manager', lang: 'zh', lowFx: reduce };
+}
+
+function loadState(): AppState {
+  const stored = load<AppState>(STATE_KEY);
+  if (stored && stored.version === STATE_VERSION) return stored;
+  const fresh = buildInitialState();
+  save(STATE_KEY, fresh);
+  return fresh;
+}
+
+let state = loadState();
+let prefs: Prefs = { ...defaultPrefs(), ...(load<Partial<Prefs>>(PREFS_KEY) ?? {}) };
+setLang(prefs.lang);
+
+const listeners = new Set<Listener>();
+const emit = (kind: ChangeKind) => listeners.forEach((fn) => fn(kind));
+
+export const store = {
+  get state(): AppState {
+    return state;
+  },
+  get prefs(): Prefs {
+    return prefs;
+  },
+  /** 修改資料的唯一入口。 */
+  update(mutate: (draft: AppState) => void): void {
+    mutate(state);
+    save(STATE_KEY, state);
+    emit('state');
+  },
+  setPrefs(patch: Partial<Prefs>): void {
+    prefs = { ...prefs, ...patch };
+    setLang(prefs.lang);
+    save(PREFS_KEY, prefs);
+    emit('prefs');
+  },
+  /** 回到初始資料（語言與特效偏好保留）。 */
+  reset(): void {
+    state = buildInitialState();
+    save(STATE_KEY, state);
+    emit('reset');
+  },
+  subscribe(fn: Listener): () => void {
+    listeners.add(fn);
+    return () => listeners.delete(fn);
+  },
+  /** 產生下一個流水號，例如 nextId('task', 'T-') → T-701。 */
+  nextId(kind: string, prefix: string): string {
+    const n = (state.counters[kind] ?? 1) + 1;
+    state.counters[kind] = n;
+    return `${prefix}${n}`;
+  },
+};
