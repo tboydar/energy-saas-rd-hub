@@ -25,7 +25,7 @@ export const SCENARIOS: Scenario[] = [
     mitigation: L('擴充磁碟、手動觸發分層作業，並從重試佇列補寫。', 'Expand the disk, trigger tiering manually, and replay the retry queue.') },
   { deviceId: 'truck', severity: 'SEV2',
     title: L('接入閘道連線數暴增，部分場站資料遺漏', 'Connection surge on the ingestion gateway drops data from some sites'),
-    impact: L('北風電廠等 6 個場站間歇斷線，資料在邊緣端緩衝。', 'Six sites, including Northgale Power Plant, disconnect intermittently and buffer data at the edge.'),
+    impact: L('朔風電廠等 6 個場站間歇斷線，資料在邊緣端緩衝。', 'Six sites, including Northgale Power Plant, disconnect intermittently and buffer data at the edge.'),
     rootCause: L('場站韌體更新後同時重連，連線池沒有退避機制。', 'Sites reconnected all at once after a firmware update and the connection pool has no backoff.'),
     mitigation: L('啟用連線速率限制並分批重連。', 'Enable connection rate limiting and reconnect in batches.') },
 ];

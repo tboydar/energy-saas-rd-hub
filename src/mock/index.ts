@@ -15,7 +15,7 @@ import { buildSprints, buildStandups } from './sprints';
 import { buildTasks } from './tasks';
 
 /** 資料結構有不相容的變更時把這個數字加一，舊的 localStorage 就會自動重建。 */
-export const STATE_VERSION = 3;
+export const STATE_VERSION = 4;
 
 /** 用固定 seed 產生整份初始資料。同一個 seed 的結果永遠相同。 */
 export function buildInitialState(seed: number = DEFAULT_SEED): AppState {

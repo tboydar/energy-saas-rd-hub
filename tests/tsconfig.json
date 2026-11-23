@@ -12,6 +12,7 @@
     "./e2e",
     "./setup.ts",
     "../playwright.config.ts",
+    "../scripts",
     "../src"
   ]
 }

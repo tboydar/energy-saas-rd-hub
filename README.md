@@ -81,6 +81,7 @@ bun run build && bun run test:e2e   # E2E 測試（會自己啟動預覽伺服�
 - **E2E 測試**（`tests/e2e/`，用 Playwright）：照驗收標準寫的，包含 5 種角色的選單與權限、Kanban 拖曳、重新整理後保留與重設、3D 點擊設備聚焦、事件走到事後檢討、需求轉任務、週報、CI/CD 流程。
 - 本機的 E2E 直接使用已安裝的 Chrome 瀏覽器。沒有的話先執行 `bunx playwright install chromium`，再用 `CI=1 bun run test:e2e`。
 - CI 的機器沒有 GPU，3D 場景靠軟體算圖。本機要重現同樣的情況：`E2E_SOFTWARE_GL=1 bun run test:e2e`。
+- **名稱查核**：`bun run check:names` 會從假資料取出所有組織名與人名，去查經濟部商工登記（33 種登記狀態）、GLEIF、Wikidata 與中文維基百科，看有沒有剛好和真實的公司或知名人物同名。約需 10 分鐘。查不到不代表世界上不存在，這是一套固定範圍的查核。
 - 同一套 E2E 可以對已部署的網站跑：`E2E_BASE_URL=https://<你的帳號>.github.io/<repo 名稱>/ bun run test:e2e`。
 
 ## 部署到 GitHub Pages
@@ -108,6 +109,7 @@ repo 換名字或放在別的子路徑都能開啟，重新整理也不會 404�
 ├── tests/
 │   ├── unit/                      單元測試（bun test）
 │   └── e2e/                       E2E 測試（Playwright）
+├── scripts/check-names.ts         假名稱查核
 └── src/
     ├── main.ts                    進入點
     ├── core/                      型別、store（localStorage）、RBAC、i18n、路由、推導資料、事件與 Pipeline 狀態機
