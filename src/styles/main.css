@@ -25,8 +25,8 @@
   --series-1: #2f6f9f;
   --series-2: #eb6834;
   --series-3: #1baf7a;
-  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Segoe UI", sans-serif;
-  --font-plate: "Barlow Semi Condensed", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-ui: system-ui, "PingFang TC", "Noto Sans TC", "Segoe UI", sans-serif;
+  --font-plate: "Barlow Semi Condensed", "PingFang TC", "Noto Sans TC", sans-serif;
   --r: 6px;
 }
 

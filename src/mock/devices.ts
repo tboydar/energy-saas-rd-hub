@@ -5,7 +5,7 @@ import { L, round1 } from './util';
 // 3D 工廠裡可以點擊的設備，每一個都對應資料平台的一段。
 // 設備標籤（PRS-01…）仿照工廠管線圖的編號習慣，貫穿 3D、事件與任務。
 
-export const SITE = L('晴光能源・一號場站', 'Sunbeam Energy, Site One');
+export const SITE = L('晴光能源・一號場站', 'Fairglow Energy, Site One');
 
 export function buildDevices(rng: Rng): Device[] {
   const j = (base: number, pct: number) => round1(base * (1 + rng.float(-pct, pct)));
