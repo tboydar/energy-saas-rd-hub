@@ -38,7 +38,7 @@ async function scanPages(page: Page, pages: string[]): Promise<string[]> {
     for (let i = 0; i < Math.max(count, 1); i++) {
       if (count) await tabs.nth(i).click();
       // 圖表與流程圖是進到頁面後才載入的
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(300);
       await page.waitForLoadState('networkidle');
       for (const text of await leftovers(page)) problems.push(`${hash}${count ? ` 第 ${i + 1} 個分頁` : ''}：${text}`);
     }
@@ -47,6 +47,7 @@ async function scanPages(page: Page, pages: string[]): Promise<string[]> {
 }
 
 test('英文介面的每一頁、每個分頁都沒有殘留的中文或全形標點', async ({ page }) => {
+  test.slow(); // 要走過二十幾個畫面
   await open(page, '/about');
   await page.click('[data-lang="en"]');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');

@@ -36,10 +36,10 @@ test('3D 場景載入後，點設備會顯示資料小卡，小卡的任務連�
 test('點設備後相機是平滑移動過去的，不是瞬間跳過去', async ({ page }) => {
   await open(page, '/dashboard');
   await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: SCENE_TIMEOUT });
-  await page.click('.tag3d[data-device="truck"]');
   // 標籤的位置是每一幀由相機投影算出來的，所以它走過的位置就是相機走過的位置。
-  // 在頁面裡「逐幀」記錄，直到連續幾幀不再變動。用幀數而不是毫秒，
-  // 這樣不管電腦快慢（CI 沒有 GPU，每一幀都很久）結果都一樣。
+  // 在頁面裡「逐幀」記錄：先開始記錄，再點擊，等它動起來之後連續幾幀不再變動才結束。
+  // 點擊與記錄都在頁面裡同一段程式完成，用幀數而不是毫秒，
+  // 所以不管電腦快慢（沒有 GPU 的機器每一幀都很久）結果都一樣。
   const path = await page.evaluate(() => new Promise<string[]>((resolve) => {
     const tag = document.querySelector<HTMLElement>('.tag3d[data-device="truck"]')!;
     const seen = [tag.style.transform];
@@ -53,9 +53,11 @@ test('點設備後相機是平滑移動過去的，不是瞬間跳過去', async
       } else {
         still++;
       }
-      if (still >= 10 || ++frames >= 400) resolve(seen);
+      // 還沒開始動之前的靜止不算數
+      if ((seen.length > 1 && still >= 10) || ++frames >= 900) resolve(seen);
       else requestAnimationFrame(tick);
     };
+    tag.click();
     requestAnimationFrame(tick);
   }));
   // 瞬間跳過去只會有起點與終點兩個位置；平滑移動會經過很多個中間位置

@@ -84,12 +84,14 @@ export function mountShell(app: HTMLElement): void {
     document.title = `${def ? t(def.nav) : t('notfound.title')}${getLang() === 'zh' ? '｜' : ' | '}${t('app.name')}`;
     if (!def) {
       setHtml(view, html`<div class="page"><div class="notice"><h1>${t('notfound.title')}</h1><a class="btn" href="${href('/dashboard')}">${t('denied.back')}</a></div></div>`);
+      view.dataset.page = route.path;
       return;
     }
     if (!can(def.perm)) {
       setHtml(view, html`<div class="page"><div class="notice">${icon('lock', 34)}<h1>${t('denied.title')}</h1>
         <p>${t('denied.body', { role: t(`role.${store.prefs.role}` as I18nKey), page: t(def.nav) })}</p>
         <a class="btn" href="${href('/dashboard')}">${t('denied.back')}</a></div></div>`);
+      view.dataset.page = route.path;
       return;
     }
     const mod = await def.load();
@@ -98,6 +100,8 @@ export function mountShell(app: HTMLElement): void {
     if (route.path !== lastPath) window.scrollTo(0, 0);
     lastPath = route.path;
     cleanup = mod.mount(view, route);
+    // 新頁面的程式載入完之前，畫面上還是上一頁。標上路徑，才知道現在畫面上是哪一頁。
+    view.dataset.page = route.path;
   }
 
   on(top, 'change', '#role-select', (_e, el) => store.setPrefs({ role: (el as HTMLSelectElement).value as RoleId }));

@@ -7,6 +7,7 @@ import { open } from './helpers';
 const PAGES = ['/dashboard', '/team', '/projects', '/governance', '/systems', '/collab', '/rbac', '/about'];
 
 test('走過每一頁，瀏覽器只向網站本身拿靜態檔案', async ({ page, baseURL }) => {
+  test.slow(); // 每一頁都要等延後載入的程式要完
   const origin = new URL(baseURL ?? 'http://localhost/').origin;
   const requests: { url: string; method: string; type: string }[] = [];
   page.on('request', (request) => requests.push({ url: request.url(), method: request.method(), type: request.resourceType() }));
