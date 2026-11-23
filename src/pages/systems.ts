@@ -180,10 +180,18 @@ export function mount(root: HTMLElement): () => void {
     });
   }
 
+  /** 標題下的那一行：有事件時說它在哪個階段；沒有時說上一次花多久恢復。 */
+  function summary(): string {
+    const open = currentIncident();
+    if (open) return t('sys.sumOpen', { id: open.id, sev: open.severity, stage: t(`sys.stage.${open.stage}` as I18nKey) });
+    const last = store.state.incidents.find((i) => i.stage === 'closed');
+    return last ? t('sys.sumCalm', { id: last.id, n: minutesToRecover(last) ?? 0 }) : t('dash.sumCalm');
+  }
+
   const sig = () => { const i = currentIncident(); return `${i?.id}:${i?.stage}:${i?.commander}:${store.state.incidents.length}:${store.prefs.role}`; };
 
   setHtml(root, html`<div class="page">
-    ${pageHead(t('nav.systems'), t('sys.lead'))}
+    ${pageHead(t('nav.systems'), summary())}
     <section class="stack" style="gap:0"><h2 class="section-title" style="margin-bottom:6px">${t('sys.arch')}</h2><p class="muted small" style="margin-bottom:10px;max-width:90ch">${t('sys.archHint')}</p>
       <div class="flow has-bar" id="arch-flow" style="height:440px"></div><div class="select-bar" id="select-bar"></div></section>
     <section class="panel"><div class="panel-head"><h2>${t('sys.live')}</h2><span class="muted">${t('sys.zscore')}</span></div>
@@ -238,7 +246,12 @@ export function mount(root: HTMLElement): () => void {
     store.subscribe(() => {
       // 只有事件的階段、指揮官或角色變了才重畫；編輯 Postmortem 文字不會打斷輸入。
       const next = sig();
-      if (next !== signature) { signature = next; renderIncident(); }
+      if (next !== signature) {
+        signature = next;
+        renderIncident();
+        const sum = $('#page-sum', root);
+        if (sum) sum.textContent = summary();
+      }
     }),
     on(root, 'focusout', '#pm', (_e, el) => {
       const cur = currentIncident();

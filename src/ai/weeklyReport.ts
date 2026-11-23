@@ -48,7 +48,7 @@ export function analyze(state: AppState, lang: Lang): { risks: ReportInsight[]; 
   if (stale.length) {
     risks.push({ level: 'med', text: zh
       ? `${stale.length} 個 PR 等待 Review 超過 24 小時，最久的是 ${stale[0].id}（${stale[0].ageHours} 小時）`
-      : `${stale.length} PRs have waited over 24 hours for review; the oldest is ${stale[0].id} (${stale[0].ageHours} h)` });
+      : `${stale.length === 1 ? '1 PR has' : `${stale.length} PRs have`} waited over 24 hours for review; the oldest is ${stale[0].id} (${stale[0].ageHours} h)` });
   }
 
   for (const p of state.projects.filter((x) => x.status !== 'onTrack')) {
@@ -61,7 +61,7 @@ export function analyze(state: AppState, lang: Lang): { risks: ReportInsight[]; 
   if (failing.length) {
     risks.push({ level: 'low', text: zh
       ? `${failing.length} 項品質基準未達標：${failing.map((q) => q.label.zh).join('、')}`
-      : `${failing.length} quality baselines are missed: ${failing.map((q) => q.label.en).join(', ')}` });
+      : `${failing.length === 1 ? '1 quality baseline is' : `${failing.length} quality baselines are`} missed: ${failing.map((q) => q.label.en).join(', ')}` });
   }
 
   for (const pos of state.positions.filter((x) => x.openDays >= 30)) {
@@ -79,7 +79,7 @@ export function analyze(state: AppState, lang: Lang): { risks: ReportInsight[]; 
   if (pending.length) {
     asks.push(zh
       ? `${pending.length} 件跨部門需求待評估：${pending.map((r) => r.id).join('、')}`
-      : `${pending.length} cross-team requests await evaluation: ${pending.map((r) => r.id).join(', ')}`);
+      : `${pending.length === 1 ? '1 cross-team request awaits' : `${pending.length} cross-team requests await`} evaluation: ${pending.map((r) => r.id).join(', ')}`);
   }
 
   const pctDone = stats.committed ? Math.round((stats.done / stats.committed) * 100) : 0;
@@ -108,12 +108,12 @@ export function generateWeeklyReport(state: AppState, lang: Lang): string {
   const zh = lang === 'zh';
   const { risks, asks, headline } = analyze(state, lang);
   const name = (id: string) => state.members.find((m) => m.id === id)?.name[lang] ?? id;
-  const light = { onTrack: '🟢', atRisk: '🟡', offTrack: '🔴' };
+  const light = zh ? { onTrack: '順利', atRisk: '有風險', offTrack: '落後' } : { onTrack: 'On track', atRisk: 'At risk', offTrack: 'Off track' };
   const levelText = { high: zh ? '高' : 'High', med: zh ? '中' : 'Med', low: zh ? '低' : 'Low' };
   const projects = state.projects.map((p) => {
     const next = p.milestones.find((m) => m.date >= DEMO_TODAY);
     const ms = next ? (zh ? `，下個里程碑 ${shortDate(next.date)} ${next.name.zh}` : `, next milestone ${shortDate(next.date)} ${next.name.en}`) : '';
-    return `- ${light[p.status]} ${p.name[lang]}${zh ? '：' : ': '}${p.progress}%${zh ? '，負責人 ' : ', owner '}${name(p.owner)}${ms}`;
+    return `- ${zh ? `【${light[p.status]}】` : `[${light[p.status]}] `}${p.name[lang]}${zh ? '：' : ': '}${p.progress}%${zh ? '，負責人 ' : ', owner '}${name(p.owner)}${ms}`;
   });
   const done = state.tasks.filter((t) => t.sprintId === activeSprint(state).id && t.status === 'done');
   const next = state.tasks.filter((t) => t.status === 'progress' && t.priority === 'P0');

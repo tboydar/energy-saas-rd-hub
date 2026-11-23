@@ -37,10 +37,10 @@ export function postmortemTemplate(state: AppState, incident: Incident, lang: La
       '## 時間軸', ...(incident.compressed ? ['（Demo 時間壓縮：1 秒 = 1 分鐘）'] : []), '| 時間 | 事件 | 處理人 |', '| --- | --- | --- |', lines, '',
       '## 根本原因', incident.rootCause.zh, '',
       '## 處置方式', incident.mitigation.zh, '',
-      '## 做得好的地方', '- 告警在第一時間觸發並指派到人', '- （待補）', '',
-      '## 可以更好的地方', '- （待補：偵測、溝通、工具哪裡卡住）', '',
-      '## 改善項目', '- [ ] 把這次的失效模式加入發版後自動回滾條件（負責人／期限）', '- [ ] 補上對應的監控與告警（負責人／期限）', '- [ ] 更新值班手冊（負責人／期限）', '',
-      '> 無究責原則：檢討的是系統與流程，不是個人。',
+      '## 做得好的地方', '- （填寫）', '',
+      '## 可以更好的地方', '- （填寫：偵測、溝通、工具哪裡卡住）', '',
+      '## 改善項目', '- [ ] （項目／負責人／期限）', '',
+      '這份檢討不追究個人責任，只找系統與流程要改的地方。',
     ].join('\n');
   }
   return [
@@ -51,9 +51,9 @@ export function postmortemTemplate(state: AppState, incident: Incident, lang: La
     '## Timeline', ...(incident.compressed ? ['(Demo time compression: 1 second = 1 minute)'] : []), '| Time | Event | Owner |', '| --- | --- | --- |', lines, '',
     '## Root cause', incident.rootCause.en, '',
     '## Resolution', incident.mitigation.en, '',
-    '## What went well', '- The alert fired promptly and reached an owner', '- (to be added)', '',
-    '## What could be better', '- (to be added: where detection, communication or tooling slowed us down)', '',
-    '## Action items', '- [ ] Add this failure mode to the post-release auto-rollback conditions (owner / due date)', '- [ ] Add the missing monitoring and alerts (owner / due date)', '- [ ] Update the on-call runbook (owner / due date)', '',
-    '> Blameless: we examine systems and process, not people.',
+    '## What went well', '- (fill in)', '',
+    '## What could be better', '- (fill in: where detection, communication or tooling slowed us down)', '',
+    '## Action items', '- [ ] (item / owner / due date)', '',
+    'This review assigns no personal blame. It looks for what to change in systems and process.',
   ].join('\n');
 }

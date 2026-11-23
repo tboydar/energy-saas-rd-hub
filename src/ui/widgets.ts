@@ -15,9 +15,10 @@ export function initials(name: L10n): string {
   return text.split(/[\s-]+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-export function avatar(member: Pick<Member, 'name' | 'hue'> | undefined, small = false): Safe {
-  if (!member) return html`<span class="avatar ${small ? 'sm' : ''}" style="--h:200" aria-hidden="true">?</span>`;
-  return html`<span class="avatar ${small ? 'sm' : ''}" style="--h:${member.hue}" title="${tx(member.name)}" aria-hidden="true">${initials(member.name)}</span>`;
+/** 頭像的顏色代表小組（資料平台、分析與 AI、SaaS 應用），不是隨機配色。 */
+export function avatar(member: Pick<Member, 'name' | 'squad'> | undefined, small = false): Safe {
+  if (!member) return html`<span class="avatar ${small ? 'sm' : ''}" aria-hidden="true">?</span>`;
+  return html`<span class="avatar is-${member.squad} ${small ? 'sm' : ''}" title="${tx(member.name)}" aria-hidden="true">${initials(member.name)}</span>`;
 }
 
 export interface ActionButton {
@@ -57,8 +58,9 @@ export function tabs(items: { id: string; label: string }[], active: string): Sa
   return html`<div class="tabs" role="tablist">${items.map((i) => html`<button type="button" role="tab" class="tab" data-tab="${i.id}" aria-selected="${String(i.id === active)}">${i.label}</button>`)}</div>`;
 }
 
-export function pageHead(title: string, lead: string, actions?: Safe): Safe {
-  return html`<header class="page-head"><h1>${title}</h1><p class="lead">${lead}</p>${actions ? html`<div class="actions">${actions}</div>` : ''}</header>`;
+/** 頁首：標題，加上一行由資料算出的現況（不是固定的介紹文字）。 */
+export function pageHead(title: string, summary?: string, actions?: Safe): Safe {
+  return html`<header class="page-head"><h1>${title}</h1>${summary ? html`<p class="page-sum" id="page-sum">${summary}</p>` : ''}${actions ? html`<div class="actions">${actions}</div>` : ''}</header>`;
 }
 
 /** 進度條：level 決定顏色（over 紅、high 黃、good 綠，其餘用主色）。 */

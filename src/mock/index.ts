@@ -23,7 +23,7 @@ export function buildInitialState(seed: number = DEFAULT_SEED): AppState {
   return {
     version: STATE_VERSION,
     seed,
-    members: buildMembers(forkRng(seed, 'members')),
+    members: buildMembers(),
     projects: buildProjects(),
     tasks,
     sprints: buildSprints(forkRng(seed, 'sprints'), tasks),

@@ -23,7 +23,6 @@ const loadChip = (load: Load): Safe =>
   load.level === 'over' ? statusChip('crit', t('team.load.over'))
     : load.level === 'high' ? statusChip('warn', t('team.load.high'))
       : load.level === 'low' ? statusChip('mute', t('team.load.low')) : statusChip('ok', t('team.load.ok'));
-const mood = (n: number) => '●'.repeat(n) + '○'.repeat(5 - n);
 
 export function mount(root: HTMLElement, route: Route): () => void {
   let tab = route.query.get('tab') ?? 'members';
@@ -72,7 +71,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
           <ul class="check-list">${m.growthPlan.map((g) => html`<li><input type="checkbox" id="${g.id}" data-growth="${g.id}" ${g.done ? raw('checked') : ''} ${write ? '' : raw('disabled')} /><label for="${g.id}" class="${g.done ? 'is-done' : ''}">${tx(g.text)}</label></li>`)}</ul></div>
         <div><h3 class="section-title">${t('team.oneOnOne')}</h3>
           ${m.oneOnOnes.length ? m.oneOnOnes.map((o) => html`<div class="note">
-              <div class="note-meta"><span class="num">${o.date}</span><span>${t('team.mood')} <span class="mood" aria-label="${o.mood}/5">${mood(o.mood)}</span></span></div>
+              <div class="note-meta"><span class="num">${o.date}</span><span>${t('team.mood')} <b class="num">${o.mood}／5</b></span></div>
               <p>${tx(o.summary)}</p><dl><dt>${t('team.actions')}</dt><dd>${tx(o.actions)}</dd></dl></div>`) : html`<p class="muted small">${t('team.noOneOnOne')}</p>`}
         </div>
         <div class="stack"><h3 class="section-title">${t('team.addOneOnOne')}</h3>
@@ -83,10 +82,10 @@ export function mount(root: HTMLElement, route: Route): () => void {
           <label class="field"><span>${t('team.actions')}</span><textarea id="note-actions" style="min-height:56px" ${write ? '' : raw('disabled')}>${draft.actions}</textarea></label>
           <div>${actionBtn({ act: 'save-note', label: t('team.saveNote'), perm: 'oneonone.write', cls: 'btn-primary' })}</div>
         </div>
-        <div class="stack"><h3 class="section-title">${icon('spark', 16)}${t('team.feedback')}</h3>
+        <div class="stack"><h3 class="section-title">${t('team.feedback')}</h3>
           <p class="muted small">${t('team.feedbackHint')}</p>
           <textarea id="feedback" style="min-height:200px" ${write ? '' : raw('disabled')}>${feedback}</textarea>
-          <div class="row">${actionBtn({ act: 'ai-draft', label: t('team.aiDraft'), perm: 'oneonone.write', icon: 'spark' })}${actionBtn({ act: 'save-draft', label: t('team.saveDraft'), perm: 'oneonone.write' })}</div>
+          <div class="row">${actionBtn({ act: 'ai-draft', label: t('team.aiDraft'), perm: 'oneonone.write' })}${actionBtn({ act: 'save-draft', label: t('team.saveDraft'), perm: 'oneonone.write' })}</div>
         </div>`
         : html`<div class="locked-note">${icon('lock')}<span>${t('team.private', { perm: t('perm.team.private') })}</span></div>`}
     </div></aside>`;
@@ -146,7 +145,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
     flow?.destroy();
     flow = null;
     setHtml(root, html`<div class="page">
-      ${pageHead(t('nav.team'), t('team.lead'))}
+      ${pageHead(t('nav.team'), t('team.sum', { n: store.state.members.filter((m) => m.active).length, s: new Set(store.state.members.filter((m) => m.active).map((m) => m.squad)).size }))}
       ${tabs([{ id: 'members', label: t('team.tab.members') }, { id: 'org', label: t('team.tab.org') }, { id: 'hiring', label: t('team.tab.hiring') }], tab)}
       ${tab === 'members' ? membersTab() : tab === 'hiring' ? hiringTab() : html`<p class="muted">${t('team.org.lead')}</p><div class="flow is-tall" id="org-flow"></div>`}
     </div>`);

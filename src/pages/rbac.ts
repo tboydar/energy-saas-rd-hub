@@ -1,6 +1,6 @@
 import { can } from '../core/auth';
 import { t, type I18nKey } from '../core/i18n';
-import { DEFAULT_MATRIX, isLocked, PERM_GROUPS, ROLES, type Perm } from '../core/rbac';
+import { DEFAULT_MATRIX, isLocked, PERM_GROUPS, PERMS, ROLES, type Perm } from '../core/rbac';
 import { store } from '../core/store';
 import type { RoleId } from '../core/types';
 import { html, on, raw, setHtml, toast, type Safe } from '../ui/dom';
@@ -25,8 +25,8 @@ export function mount(root: HTMLElement): () => void {
     const edit = can('rbac.edit');
     const current = store.prefs.role;
     setHtml(root, html`<div class="page">
-      ${pageHead(t('nav.rbac'), t('rbac.lead'), actionBtn({ act: 'reset', label: t('rbac.reset'), perm: 'rbac.edit', icon: 'reset' }))}
-      <div class="banner is-info">${icon(edit ? 'about' : 'lock')}<span>${edit ? t('rbac.editHint') : t('rbac.readonly', { perm: t('perm.rbac.edit'), role: t(`role.${current}` as I18nKey) })}</span></div>
+      ${pageHead(t('nav.rbac'), t('rbac.sum', { r: ROLES.length, p: PERMS.length }), actionBtn({ act: 'reset', label: t('rbac.reset'), perm: 'rbac.edit', icon: 'reset' }))}
+      <p class="hint">${edit ? '' : icon('lock', 15)}${edit ? t('rbac.editHint') : t('rbac.readonly', { perm: t('perm.rbac.edit'), role: t(`role.${current}` as I18nKey) })}</p>
       <section class="panel"><div class="table-wrap"><table class="table rbac">
         <thead><tr><th>${t('rbac.perm')}</th>${ROLES.map((r) => html`<th class="${r === current ? 'is-current' : ''}"><b>${t(`role.${r}` as I18nKey)}</b><p>${t(`rbac.desc.${r}` as I18nKey)}</p>
           ${r === current ? html`<span class="chip is-info">${t('rbac.current')}</span>` : html`<button type="button" class="btn btn-sm" data-signin="${r}">${t('rbac.signIn')}</button>`}

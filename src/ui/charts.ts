@@ -24,7 +24,7 @@ export function palette() {
 function applyDefaults(): void {
   const p = palette();
   Chart.defaults.font.family = css('--font-ui');
-  Chart.defaults.font.size = 12;
+  Chart.defaults.font.size = 13;
   Chart.defaults.color = p.ink2;
   Chart.defaults.borderColor = p.grid;
   Chart.defaults.animation = false;
@@ -114,7 +114,7 @@ export function radarChart(canvas: HTMLCanvasElement, labels: string[], values: 
     data: { labels, datasets: [{ label: name, data: values, borderColor: p.s1, borderWidth: 2, backgroundColor: p.s1 + '26', pointRadius: 3.5, pointBackgroundColor: p.s1, pointBorderColor: p.panel, pointBorderWidth: 2 }] },
     options: {
       plugins: { legend: { display: false } },
-      scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, display: false }, grid: { color: p.grid }, angleLines: { color: p.grid }, pointLabels: { color: p.ink2, font: { size: 12 } } } },
+      scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, display: false }, grid: { color: p.grid }, angleLines: { color: p.grid }, pointLabels: { color: p.ink2, font: { size: 13 } } } },
     },
   });
 }

@@ -39,7 +39,7 @@ export const en: Record<I18nKey, string> = {
 
   // common
   "common.cancel": "Cancel",
-  "common.save": "Save",
+  "common.save": "Save changes",
   "common.close": "Close",
   "common.copy": "Copy",
   "common.copied": "Copied to clipboard",
@@ -88,22 +88,19 @@ export const en: Record<I18nKey, string> = {
   "perm.rbac.edit": "Edit the permission matrix",
 
   // dash
-  "dash.lead": "This week's delivery pace and quality for the engineering team, plus live health of the data platform.",
   "dash.dora": "The four DORA metrics",
   "dash.delivery": "Delivery and quality",
   "dash.vsLast": "vs last week",
   "dash.factory": "Energy data factory",
-  "dash.factoryHint": "Drag to rotate and scroll to zoom. Click a device or its tag to see live data.",
-  "dash.legend": "Raw cubes are raw power data, the press is the processing pipeline, and glowing cubes are analytics and reports. Belt speed follows throughput.",
+  "dash.factoryHint": "Drag to rotate, scroll to zoom, click a device for its data.",
   "dash.lowFx": "Reduce effects",
   "dash.resetView": "Reset view",
   "dash.zoomIn": "Zoom in",
   "dash.zoomOut": "Zoom out",
   "dash.loading3d": "Loading the 3D scene…",
   "dash.no3d": "WebGL is unavailable in this browser, so the 3D scene did not load. Everything else still works.",
-  "dash.scale": "Model scale 1:200",
   "dash.pick": "Pick a device",
-  "dash.pickHint": "Each device stands for one part of the data platform. Click the model or a tag: the camera glides over and this panel shows live data, the owning squad and related tasks.",
+  "dash.pickHint": "Click a device on the model, or choose one below.",
   "dash.throughput": "Throughput",
   "dash.latency": "Latency",
   "dash.error": "Error rate",
@@ -126,7 +123,7 @@ export const en: Record<I18nKey, string> = {
   "dash.perDay": "Projected per day",
   "dash.perSec": "pts/s",
   "dash.points": "points",
-  "dash.openSystems": "Open platform view and incidents",
+  "dash.openSystems": "Platform and incidents",
 
   // status
   "status.backlog": "Backlog",
@@ -140,11 +137,10 @@ export const en: Record<I18nKey, string> = {
   "flow.loading": "Loading the flow diagram…",
 
   // team
-  "team.lead": "Load, skills and growth for all 8 engineers. Anyone over capacity is flagged so work can be rebalanced early.",
   "team.tab.members": "Members",
   "team.tab.org": "Org chart",
   "team.tab.hiring": "Hiring",
-  "team.overload": "{n} people are over capacity: {names}",
+  "team.overload": "{n} {n|person is|people are} over capacity: {names}",
   "team.col.member": "Member",
   "team.col.squad": "Squad",
   "team.col.load": "Current load",
@@ -168,7 +164,7 @@ export const en: Record<I18nKey, string> = {
   "team.noteSaved": "1:1 note saved",
   "team.noteEmpty": "Write what you discussed first",
   "team.feedback": "Performance feedback draft",
-  "team.feedbackHint": "The draft stays in this browser. \"Draft with AI\" builds a first pass from tasks, skills and 1:1 notes using rules only, with no LLM call.",
+  "team.feedbackHint": "The draft stays in this browser. The first pass is assembled by rules from tasks, skills and 1:1 notes, with no LLM call.",
   "team.aiDraft": "Draft with AI",
   "team.saveDraft": "Save draft",
   "team.draftSaved": "Feedback draft saved",
@@ -181,9 +177,9 @@ export const en: Record<I18nKey, string> = {
   "team.field.capacity": "Capacity per sprint (pts)",
   "team.field.active": "Active",
   "team.memberSaved": "Member updated",
-  "team.org.lead": "One engineering manager, 3 squads and 8 engineers. Node color shows load. Click a person for details.",
-  "team.hiring.lead": "Funnels and candidate progress for three open roles. Candidates appear by alias only.",
-  "team.hiring.open": "Open {n} days",
+  "team.org.lead": "Node color shows load. Click a person for details.",
+  "team.hiring.lead": "Candidates are shown by alias only.",
+  "team.hiring.open": "Open {n} {n|day|days}",
   "team.hiring.candidates": "Candidates",
   "team.hiring.position": "Role",
   "team.hiring.stage": "Stage",
@@ -200,7 +196,6 @@ export const en: Record<I18nKey, string> = {
   "hire.offer": "Offer",
 
   // proj
-  "proj.lead": "Six active projects, the task board, sprint planning, and quarterly OKRs aligned with the product roadmap.",
   "proj.tab.gantt": "Projects & Gantt",
   "proj.tab.kanban": "Kanban",
   "proj.tab.sprint": "Sprint",
@@ -216,22 +211,22 @@ export const en: Record<I18nKey, string> = {
   "proj.col.next": "Next milestone",
   "proj.today": "Today",
   "proj.viewTasks": "View tasks",
-  "proj.ganttCaption": "Bars are project spans, the darker part is progress, diamonds are milestones, and the vertical line is today ({date}).",
+  "proj.ganttCaption": "Dark fill is progress, diamonds are milestones, the line is today ({date}).",
 
   // kanban
   "kanban.project": "Project",
   "kanban.assignee": "Assignee",
   "kanban.mine": "Only my tasks",
-  "kanban.hint.all": "Drag any task to another column, or use the arrows on a card. Click a card to reassign it.",
-  "kanban.hint.squad": "You can move and assign tasks in \"{squad}\" projects. Other squads are view-only.",
-  "kanban.hint.own": "You can move tasks assigned to you. Everything else is view-only.",
+  "kanban.hint.all": "Drag any card, or use its arrows. Click a card to reassign it.",
+  "kanban.hint.squad": "You can move and assign \"{squad}\" tasks. Other squads are view-only.",
+  "kanban.hint.own": "You can move tasks assigned to you. The rest are view-only.",
   "kanban.hint.none": "This role can view the board but cannot move or assign tasks.",
   "kanban.moved": "{id} moved to {status}",
   "kanban.noMove": "\"{role}\" cannot move this task",
   "kanban.empty": "No tasks",
   "kanban.left": "Move left",
   "kanban.right": "Move right",
-  "kanban.count": "{n} cards, {p} pts",
+  "kanban.count": "{n} {n|card|cards}, {p} pts",
 
   // task
   "task.type.feature": "Feature",
@@ -259,8 +254,8 @@ export const en: Record<I18nKey, string> = {
   "sprint.review": "In review",
   "sprint.remaining": "Remaining",
   "sprint.capacity": "Team capacity",
-  "sprint.behind": "{n} pts behind the ideal line",
-  "sprint.ahead": "{n} pts ahead of the ideal line",
+  "sprint.behind": "{n} {n|pt|pts} behind the ideal line",
+  "sprint.ahead": "{n} {n|pt|pts} ahead of the ideal line",
   "sprint.onPace": "On the ideal line",
   "sprint.burndown": "Burndown",
   "sprint.ideal": "Ideal",
@@ -271,12 +266,11 @@ export const en: Record<I18nKey, string> = {
   "sprint.velocity": "Sprint velocity",
   "sprint.completedSeries": "Completed",
   "sprint.plan": "Sprint planning",
-  "sprint.planHint": "Add backlog tasks to this sprint or take them out. The numbers and charts above update right away.",
   "sprint.inSprint": "In the sprint ({p} pts)",
   "sprint.candidates": "Backlog candidates",
   "sprint.add": "Add",
   "sprint.remove": "Remove",
-  "sprint.overCap": "Commitment exceeds team capacity by {n} pts",
+  "sprint.overCap": "Commitment exceeds team capacity by {n} {n|pt|pts}",
   "sprint.noCandidates": "No unplanned tasks left in the backlog.",
   "sprint.standup": "Daily standup",
   "sprint.yesterday": "Yesterday",
@@ -295,7 +289,7 @@ export const en: Record<I18nKey, string> = {
   "okr.title": "{q} objectives and key results",
   "okr.editHint": "Drag a slider to update key result progress.",
   "okr.align": "Alignment map",
-  "okr.alignHint": "Left to right: project → roadmap item → objective. With the \"Edit OKRs\" permission, drag from the orange dot on a roadmap item to another objective to realign it.",
+  "okr.alignHint": "Left to right: projects, roadmap items, objectives. Drag from the orange dot on a roadmap item to another objective to realign it (needs the \"Edit OKRs\" permission).",
   "okr.realigned": "\"{item}\" now aligns with \"{obj}\"",
   "okr.roadmap": "Product roadmap",
   "okr.rm.done": "Done",
@@ -307,9 +301,8 @@ export const en: Record<I18nKey, string> = {
   "okr.kind.objective": "Objective",
 
   // sys
-  "sys.lead": "Every stage of the data platform from site to report, live flow updated each second, and the incident response process.",
   "sys.arch": "Data platform architecture",
-  "sys.archHint": "Each node is one stage of the data flow and its numbers refresh every second. Click a node to select it, then inject an anomaly or open it in the 3D factory.",
+  "sys.archHint": "Numbers refresh every second. Click a node to inject an anomaly into it or to open it in the 3D factory.",
   "sys.pickStage": "Click any node above to select a stage.",
   "sys.view3d": "Show in the 3D factory",
   "sys.inject": "Inject anomaly",
@@ -322,7 +315,7 @@ export const en: Record<I18nKey, string> = {
   "sys.edge.query": "query",
   "sys.edge.rollup": "rollups",
   "sys.live": "Live simulation",
-  "sys.liveHint": "One aggregate per device every second: a scaled-down version of hundreds of millions of points a day. Red dots mark moments the z-score detector fired.",
+  "sys.liveHint": "One aggregate per device each second, standing in for a flow of 300M points a day. Red dots mark detected anomalies.",
   "sys.zscore": "z-score = (current value − mean of the last 40) ÷ standard deviation. It counts as an anomaly only when 2 samples in a row reach an absolute value of 3, so single noisy points do not page anyone.",
   "sys.chart.tp": "Ingest throughput (pts/s)",
   "sys.chart.lat": "End-to-end latency (ms)",
@@ -333,7 +326,7 @@ export const en: Record<I18nKey, string> = {
   "sys.col.metric": "Metric",
   "sys.col.value": "Value",
   "sys.incident": "Incident management",
-  "sys.incidentLead": "Simulate a production incident: trigger it, then assign, mitigate, recover and write the postmortem. While it is open the affected device slows down and the 3D factory flashes red with gray smoke.",
+  "sys.incidentLead": "Until an incident is restored, the affected device runs slow and the 3D factory flashes red with gray smoke.",
   "sys.scenario": "Scenario",
   "sys.simulate": "Simulate an incident",
   "sys.noActive": "No incident is open right now.",
@@ -363,8 +356,8 @@ export const en: Record<I18nKey, string> = {
   "sys.mttr": "Time to restore",
   "sys.minutes": "{n} min",
   "sys.compressed": "The demo compresses time: 1 second counts as 1 minute.",
-  "sys.pm": "Postmortem template",
-  "sys.pmHint": "The template is pre-filled from this incident. Edit it freely; it saves when you leave the field.",
+  "sys.pm": "Postmortem",
+  "sys.pmHint": "Pre-filled from this incident. Saves when you leave the field.",
   "sys.pmReset": "Reapply template",
   "sys.pmCopy": "Copy Markdown",
   "sys.history": "Incident history",
@@ -375,7 +368,6 @@ export const en: Record<I18nKey, string> = {
   "sys.toast.injected": "Injected a 4-second anomaly into {tag}",
 
   // collab
-  "collab.lead": "PM and customer success submit customer needs, engineering weighs value, effort and risk and turns them into tasks, and a weekly report spells out risks and resource needs.",
   "collab.flow": "Request flow",
   "collab.flowHint": "Click a node to filter the list below.",
   "collab.stage.intake": "Intake",
@@ -384,7 +376,7 @@ export const en: Record<I18nKey, string> = {
   "collab.stage.declined": "Declined",
   "collab.stage.backlog": "Backlog",
   "collab.stage.sprint": "In a sprint",
-  "collab.count": "{n} items",
+  "collab.count": "{n} {n|item|items}",
   "collab.new": "Submit a request",
   "collab.f.title": "Request title",
   "collab.f.customer": "Customer",
@@ -423,18 +415,16 @@ export const en: Record<I18nKey, string> = {
   "collab.viewTask": "Open task {id}",
   "collab.requester": "Requested by",
   "collab.report": "AI weekly report assistant",
-  "collab.reportLead": "Generate the risk and resource report in one click. It is assembled from current data using rules only, with no LLM call. Change data elsewhere, such as moving a task or triggering an incident, and the next report reflects it.",
+  "collab.reportLead": "The report is assembled by rules from current data, with no LLM call. Move a task or trigger an incident, generate again, and it changes.",
   "collab.generate": "Generate this week's report",
   "collab.regenerate": "Regenerate",
   "collab.copyMd": "Copy Markdown",
   "collab.reportEmpty": "No report generated yet.",
-  "collab.generating": "Collecting data…",
-  "collab.insights": "What it found",
-  "collab.risks": "{n} risks",
-  "collab.asks": "{n} resource needs or suggestions",
+  "collab.insights": "Current data shows",
+  "collab.risks": "{n} {n|risk|risks}",
+  "collab.asks": "{n} resource {n|need or suggestion|needs or suggestions}",
 
   // gov
-  "gov.lead": "How technical decisions are recorded, how code is reviewed, how tech debt is prioritized, and how a change reaches production.",
   "gov.tab.adr": "Decisions (ADR)",
   "gov.tab.review": "Code review",
   "gov.tab.quality": "Quality & tech debt",
@@ -459,7 +449,7 @@ export const en: Record<I18nKey, string> = {
   "adr.statusSaved": "{id} status updated",
 
   // review
-  "review.lead": "Pull requests waiting for review. Anything older than 24 hours is flagged, because the review queue is why this sprint is behind. Approving a PR moves its linked task to Done.",
+  "review.lead": "Approving a PR moves its linked task to Done. Requesting changes sends it back to In Progress.",
   "review.col.pr": "PR",
   "review.col.people": "Author and reviewer",
   "review.col.size": "Lines changed",
@@ -497,7 +487,7 @@ export const en: Record<I18nKey, string> = {
 
   // debt
   "debt.title": "Tech debt: impact × cost",
-  "debt.hint": "Each dot is one debt item. Top left, high impact at low cost, pays back first.",
+  "debt.hint": "Top left is high impact at low cost. Pay that down first.",
   "debt.impact": "Impact",
   "debt.cost": "Cost",
   "debt.q.first": "Do first",
@@ -511,7 +501,7 @@ export const en: Record<I18nKey, string> = {
   "debt.planned": "{id} became task {task}",
 
   // cicd
-  "cicd.lead": "The path a change takes from build to production. The test stage fails on its first attempt because of a flaky test and can be retried. Production needs approval from the engineering manager.",
+  "cicd.lead": "The test stage always fails on its first attempt (a simulated flaky test) and passes on retry. Production needs someone to approve the release.",
   "cicd.run": "Run pipeline",
   "cicd.change": "Change to release",
   "cicd.current": "Running: {id}  {title}",
@@ -545,15 +535,14 @@ export const en: Record<I18nKey, string> = {
   "cicd.busy": "A pipeline is already running",
 
   // rbac
-  "rbac.lead": "What each role can see and do. Switch \"Signed in as\" above and the menu and buttons change to match this table at once.",
-  "rbac.editHint": "Tick a box to change a permission. It takes effect immediately and is saved in this browser. Locked cells cannot be cleared, so nobody gets locked out.",
+  "rbac.editHint": "A tick takes effect at once and is saved in this browser. Locked cells cannot be cleared.",
   "rbac.readonly": "Only roles with the \"{perm}\" permission can change this table. You are signed in as \"{role}\", so it is read-only.",
   "rbac.reset": "Restore default matrix",
   "rbac.resetDone": "Default permissions restored",
   "rbac.perm": "Permission",
   "rbac.current": "Current role",
   "rbac.signIn": "Sign in as this role",
-  "rbac.count": "{n} permissions",
+  "rbac.count": "{n} {n|permission|permissions}",
   "rbac.group.pages": "Page access",
   "rbac.group.team": "Team",
   "rbac.group.delivery": "Delivery",
@@ -572,10 +561,9 @@ export const en: Record<I18nKey, string> = {
   "rbac.changed": "Updated \"{role}\": {perm}",
 
   // about
-  "about.lead": "A front-end-only portfolio demo: a fictional energy SaaS engineering team that shows what an engineering manager does every day.",
   "about.fictionalTitle": "All data is fictional",
-  "about.fictionalBody": "Every company, customer, site, person, metric, incident and task here is mock data invented for this demo and matches no real company, customer or individual. There is no backend and no API key. What you do stays in this browser's localStorage, and \"Reset demo data\" at the top right restores the initial state.",
-  "about.map": "How this demo maps to an engineering manager's responsibilities",
+  "about.fictionalBody": "Every company, customer, site, person, metric, incident and task here is mock data made up for this demo. None of it matches a real company, customer or individual. The site has no backend and no API key. What you do stays in this browser, and \"Reset demo data\" at the top right restores the initial state.",
+  "about.map": "Engineering manager responsibilities it covers",
   "about.col.duty": "Responsibility",
   "about.col.where": "Where",
   "about.col.how": "How it shows up",
@@ -593,8 +581,8 @@ export const en: Record<I18nKey, string> = {
   "about.duty.incidentHow": "The full path from trigger, assignment, mitigation and recovery to the postmortem. The 3D factory flashes red with gray smoke while it lasts.",
   "about.duty.data": "High-volume time-series platform",
   "about.duty.dataHow": "A 300M-points-a-day flow: an interactive architecture diagram, throughput, latency and error rate refreshed every second, and the pipeline shown as a 3D miniature factory.",
-  "about.sdlc": "The delivery process at a glance",
-  "about.sdlcHint": "This diagram doubles as a site map. Click any node to jump to that part of the demo.",
+  "about.sdlc": "Delivery process",
+  "about.sdlcHint": "Click a node to open that page.",
   "about.n.request": "Request",
   "about.n.requestSub": "From PM / CS, evaluated by engineering",
   "about.n.plan": "Plan",
@@ -632,4 +620,44 @@ export const en: Record<I18nKey, string> = {
 
   // dash
   "dash.canvasLabel": "A 3D isometric miniature of the energy data factory. Devices can be selected with the tag buttons below.",
+
+  // nav
+  "nav.skip": "Skip to main content",
+
+  // dash
+  "dash.sum": "{sprint}, day {day}: {done} of {total} points done.",
+  "dash.sumCalm": "No open incidents.",
+  "dash.sumIncident": "{id} is open.",
+
+  // team
+  "team.sum": "{n} {n|engineer|engineers} in {s} {s|squad|squads}.",
+
+  // proj
+  "proj.sum": "{n} {n|project|projects}, {risk} at risk.",
+  "proj.sumBehind": "{sprint} is {gap} {gap|point|points} behind the ideal line.",
+
+  // gov
+  "gov.sum": "{adr} {adr|ADR|ADRs}, {prop} still proposed. {pr} {pr|PR awaits|PRs await} review and {stale} {stale|has|have} waited over 24 hours.",
+
+  // sys
+  "sys.sumCalm": "No open incidents. The last one, {id}, was restored in {n} {n|minute|minutes}.",
+  "sys.sumOpen": "{id} ({sev}) is open. Current stage: {stage}.",
+
+  // collab
+  "collab.sum": "{n} {n|request awaits|requests await} evaluation.",
+  "collab.sumNone": "No requests await evaluation.",
+
+  // rbac
+  "rbac.sum": "{r} roles, {p} permissions.",
+
+  // dash
+  "dash.keyTitle": "What the model stands for",
+  "dash.key.raw": "Gray cubes",
+  "dash.key.rawIs": "Raw power data",
+  "dash.key.press": "The press",
+  "dash.key.pressIs": "The processing pipeline",
+  "dash.key.product": "Glowing cubes",
+  "dash.key.productIs": "Analytics and reports",
+  "dash.key.belt": "Belt speed",
+  "dash.key.beltIs": "Data throughput",
 };

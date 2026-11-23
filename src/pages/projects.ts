@@ -1,6 +1,6 @@
 import { can, canAssignTask, canMoveTask, persona } from '../core/auth';
 import { daysBetween, DEMO_TODAY, shortDate } from '../core/date';
-import { getLang, plain, t, tx, type I18nKey } from '../core/i18n';
+import { getLang, plain, sentences, t, tx, type I18nKey } from '../core/i18n';
 import { href, type Route } from '../core/router';
 import { activeSprint, memberById, memberLoad, sprintStats, sprintTasks } from '../core/selectors';
 import { store } from '../core/store';
@@ -84,14 +84,13 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const movable = canMoveTask(task);
     const i = STATUSES.indexOf(task.status);
     const m = memberById(store.state, task.assignee);
-    const mine = !!who.memberId && task.assignee === who.memberId;
-    return html`<article class="kb-card ${task.priority === 'P0' ? 'is-p0' : ''} ${mine ? 'is-mine' : ''} ${movable ? '' : 'is-locked'}" draggable="${String(movable)}" data-task="${task.id}" tabindex="0" aria-label="${task.id} ${tx(task.title)}">
-      <div class="kb-top"><span class="tag">${task.id}</span><span class="chip is-plain">${t(`task.type.${task.type}` as I18nKey)}</span>${task.priority === 'P0' ? html`<span class="chip is-crit">P0</span>` : ''}<span class="pts" title="${t('task.points')}">${task.points}</span></div>
+    return html`<article class="kb-card ${movable ? '' : 'is-locked'}" draggable="${String(movable)}" data-task="${task.id}" tabindex="0" aria-label="${task.id} ${tx(task.title)}">
+      <div class="kb-top"><span class="tag">${task.id}</span><span class="kb-type">${t(`task.type.${task.type}` as I18nKey)}</span>${task.priority === 'P0' ? html`<span class="p0">P0</span>` : ''}<span class="pts" title="${t('task.points')}">${task.points}</span></div>
       <p class="kb-title">${tx(task.title)}</p>
       <div class="kb-foot"><span>${tx(projectOf(task)?.name)}</span><span class="who-sm">${avatar(m, true)}${m ? tx(m.name) : t('common.unassigned')}</span></div>
       ${movable ? html`<div class="kb-move">
-        <button type="button" class="btn btn-sm" data-move="-1" data-id="${task.id}" ${i === 0 ? raw('disabled') : ''} title="${t('kanban.left')}" aria-label="${t('kanban.left')}">${icon('left', 14)}</button>
-        <button type="button" class="btn btn-sm" data-move="1" data-id="${task.id}" ${i === STATUSES.length - 1 ? raw('disabled') : ''} title="${t('kanban.right')}" aria-label="${t('kanban.right')}">${icon('right', 14)}</button></div>` : ''}
+        ${i > 0 ? html`<button type="button" class="btn btn-sm" data-move="-1" data-id="${task.id}" title="${t('kanban.left')}" aria-label="${t('kanban.left')}">${icon('left', 14)}</button>` : ''}
+        ${i < STATUSES.length - 1 ? html`<button type="button" class="btn btn-sm" data-move="1" data-id="${task.id}" title="${t('kanban.right')}" aria-label="${t('kanban.right')}">${icon('right', 14)}</button>` : ''}</div>` : ''}
     </article>`;
   }
 
@@ -100,7 +99,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const list = state.tasks.filter((x) => (!filters.project || x.projectId === filters.project)
       && (!filters.assignee || x.assignee === filters.assignee) && (!filters.mine || !who.memberId || x.assignee === who.memberId));
     return html`
-      <div class="banner is-info">${icon(can('task.assign') || can('task.manageSquad') || can('task.updateOwn') ? 'about' : 'lock')}<span>${kanbanHint()}</span></div>
+      <p class="hint">${can('task.assign') || can('task.manageSquad') || can('task.updateOwn') ? '' : icon('lock', 15)}${kanbanHint()}</p>
       <div class="filters">
         <label class="field"><span>${t('kanban.project')}</span><select id="f-project"><option value="">${t('common.all')}</option>${state.projects.map((p) => html`<option value="${p.id}" ${p.id === filters.project ? raw('selected') : ''}>${tx(p.name)}</option>`)}</select></label>
         <label class="field"><span>${t('kanban.assignee')}</span><select id="f-assignee"><option value="">${t('common.all')}</option>${state.members.map((m) => html`<option value="${m.id}" ${m.id === filters.assignee ? raw('selected') : ''}>${tx(m.name)}</option>`)}</select></label>
@@ -186,13 +185,13 @@ export function mount(root: HTMLElement, route: Route): () => void {
         <div><dt>${t('sprint.remaining')}</dt><dd>${st.remaining}<small>${t('common.pts')}</small></dd></div>
         <div><dt>${t('sprint.capacity')}</dt><dd>${st.capacity}<small>${t('common.pts')}</small></dd></div>
       </dl>
-      ${gapText ? html`<div class="banner ${st.gap > 2 ? '' : 'is-info'}">${icon(st.gap > 2 ? 'alert' : 'check')}<span>${gapText}</span></div>` : ''}
+      ${gapText ? html`<div class="banner ${st.gap > 2 ? '' : 'is-quiet'}">${icon(st.gap > 2 ? 'alert' : 'check')}<span>${gapText}</span></div>` : ''}
       ${open && st.committed > st.capacity ? html`<div class="banner">${icon('alert')}<span>${t('sprint.overCap', { n: st.committed - st.capacity })}</span></div>` : ''}
       <div class="grid cols-2">
         <section class="panel"><div class="panel-head"><h2>${t('sprint.burndown')}</h2><span class="muted">${sprint.name}</span></div><div class="panel-body"><div class="chart-tall"><canvas id="burndown" role="img" aria-label="${t('sprint.burndown')}"></canvas></div></div></section>
         <section class="panel"><div class="panel-head"><h2>${open ? t('sprint.capVs') : t('sprint.velocity')}</h2></div><div class="panel-body"><div class="chart-tall"><canvas id="second-chart" role="img" aria-label="${open ? t('sprint.capVs') : t('sprint.velocity')}"></canvas></div></div></section>
       </div>
-      ${open ? html`<section class="panel"><div class="panel-head"><h2>${t('sprint.plan')}</h2><span class="muted">${t('sprint.planHint')}</span></div>
+      ${open ? html`<section class="panel"><div class="panel-head"><h2>${t('sprint.plan')}</h2></div>
         <div class="panel-body grid cols-2">
           <div><h3 class="section-title">${t('sprint.inSprint', { p: st.committed })}</h3><ul class="plan-list">${inSprint.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">　${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-remove', label: t('sprint.remove'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul></div>
           <div><h3 class="section-title">${t('sprint.candidates')}</h3>${candidates.length ? html`<ul class="plan-list">${candidates.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">　${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-add', label: t('sprint.add'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul>` : html`<p class="muted small">${t('sprint.noCandidates')}</p>`}</div>
@@ -288,13 +287,23 @@ export function mount(root: HTMLElement, route: Route): () => void {
       <section class="panel"><div class="panel-head"><h2>${t('okr.roadmap')}</h2></div><div class="roadmap" id="roadmap">${roadmapHtml()}</div></section>`;
   }
 
+  /** 標題下的那一行：專案數、有風險的數量，以及 Sprint 是否落後。 */
+  function summary(): string {
+    const { state } = store;
+    const st = sprintStats(state, activeSprint(state));
+    return sentences(
+      t('proj.sum', { n: state.projects.length, risk: state.projects.filter((p) => p.status !== 'onTrack').length }),
+      st.gap > 2 && t('proj.sumBehind', { sprint: st.sprint.name, gap: st.gap }),
+    );
+  }
+
   // ───── 繪製
   function render(): void {
     charts.clear();
     flow?.destroy();
     flow = null;
     setHtml(root, html`<div class="page">
-      ${pageHead(t('nav.projects'), t('proj.lead'))}
+      ${pageHead(t('nav.projects'), summary())}
       ${tabs([{ id: 'gantt', label: t('proj.tab.gantt') }, { id: 'kanban', label: t('proj.tab.kanban') }, { id: 'sprint', label: t('proj.tab.sprint') }, { id: 'okr', label: t('proj.tab.okr') }], tab)}
       ${tab === 'kanban' ? kanbanTab() : tab === 'sprint' ? sprintTab() : tab === 'okr' ? okrTab() : ganttTab()}
     </div>`);
@@ -321,6 +330,8 @@ export function mount(root: HTMLElement, route: Route): () => void {
     if (!list || !roadmap) { render(); return; }
     setHtml(list, okrList());
     setHtml(roadmap, roadmapHtml());
+    const sum = $('#page-sum', root);
+    if (sum) sum.textContent = summary();
     flow?.update(alignSpec());
   }
 

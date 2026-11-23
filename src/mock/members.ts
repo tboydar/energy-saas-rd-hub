@@ -1,5 +1,4 @@
 import type { L10n, Member, RoleId, SquadId } from '../core/types';
-import type { Rng } from './rng';
 import { L } from './util';
 
 // 8 位虛構成員。姓名、職涯目標與 1:1 內容全部為杜撰，不對應任何真實人物。
@@ -84,15 +83,14 @@ const ONE_ON_ONES: Record<string, [string, number, string, string, string, strin
   ],
 };
 
-export function buildMembers(rng: Rng): Member[] {
-  return SEEDS.map(([id, zh, en, levelZh, levelEn, squad, role, capacity, sk, okr, goalZh, goalEn], i) => ({
+export function buildMembers(): Member[] {
+  return SEEDS.map(([id, zh, en, levelZh, levelEn, squad, role, capacity, sk, okr, goalZh, goalEn]) => ({
     id,
     name: L(zh, en),
     level: L(levelZh, levelEn),
     squad,
     systemRole: role,
     active: true,
-    hue: Math.round((i * 47 + rng.int(0, 20)) % 360),
     capacity,
     skills: { backend: sk[0], data: sk[1], frontend: sk[2], cloud: sk[3], ml: sk[4], collab: sk[5] },
     okrProgress: okr,

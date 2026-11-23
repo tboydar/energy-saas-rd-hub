@@ -17,10 +17,15 @@ export function getLang(): Lang {
   return lang;
 }
 
-/** 取字典文字；可帶 {name} 形式的變數。 */
+/**
+ * 取字典文字。可帶 {name} 形式的變數；
+ * 英文的單複數寫成 {n|item|items}：n 是 1 用前者，否則用後者（"1 item"、"2 items"）。
+ */
 export function t(key: I18nKey, vars?: Record<string, string | number>): string {
   let text: string = dicts[lang][key] ?? dicts.zh[key] ?? key;
-  if (vars) for (const [k, v] of Object.entries(vars)) text = text.split(`{${k}}`).join(String(v));
+  if (!vars) return text;
+  text = text.replace(/\{(\w+)\|([^|}]*)\|([^}]*)\}/g, (_m, name: string, one: string, many: string) => (Number(vars[name]) === 1 ? one : many));
+  for (const [k, v] of Object.entries(vars)) text = text.split(`{${k}}`).join(String(v));
   return text;
 }
 
@@ -34,6 +39,11 @@ export function tx(text: L10n | undefined | null): string {
 /** 使用者輸入的內容沒有翻譯，兩種語言放同一段文字。 */
 export function plain(text: string): L10n {
   return { zh: text, en: text };
+}
+
+/** 把幾個完整的句子接成一段：中文直接相連，英文中間加空格。 */
+export function sentences(...parts: (string | false | undefined)[]): string {
+  return parts.filter(Boolean).join(lang === 'zh' ? '' : ' ');
 }
 
 export type { I18nKey };

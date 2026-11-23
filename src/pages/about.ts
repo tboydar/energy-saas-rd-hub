@@ -35,8 +35,8 @@ const STEPS: [path: string, query?: Record<string, string>][] = [
 
 export function mount(root: HTMLElement): () => void {
   setHtml(root, html`<div class="page">
-    ${pageHead(t('nav.about'), t('about.lead'))}
-    <section class="notice-box"><span class="stripe" aria-hidden="true"></span><h2>${t('about.fictionalTitle')}</h2><p>${t('about.fictionalBody')}</p></section>
+    ${pageHead(t('nav.about'))}
+    <section class="notice-box"><h2>${t('about.fictionalTitle')}</h2><p class="prose">${t('about.fictionalBody')}</p></section>
     <section class="panel"><div class="panel-head"><h2>${t('about.map')}</h2></div><div class="table-wrap"><table class="table">
       <thead><tr><th>${t('about.col.duty')}</th><th>${t('about.col.where')}</th><th>${t('about.col.how')}</th></tr></thead>
       <tbody>${DUTIES.map(([key, page, path, query]) => html`<tr><td class="nowrap"><b>${t(`about.duty.${key}` as I18nKey)}</b></td>

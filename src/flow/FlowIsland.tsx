@@ -138,7 +138,7 @@ function toEdge(e: FlowEdgeSpec): Edge {
     id: e.id, source: e.source, target: e.target, label: e.label, animated: e.animated, type: e.curve ?? 'smoothstep',
     style: { stroke: color, strokeWidth: 2, strokeDasharray: e.dashed ? '6 5' : undefined },
     markerEnd: { type: MarkerType.ArrowClosed, color, width: 18, height: 18 },
-    labelStyle: { fontSize: 12, fill: '#1d2a30' }, labelBgStyle: { fill: '#fafbfa' }, labelBgPadding: [6, 3], labelBgBorderRadius: 3,
+    labelStyle: { fontSize: 13, fill: '#1d2a30' }, labelBgStyle: { fill: '#fafbfa' }, labelBgPadding: [6, 3], labelBgBorderRadius: 3,
   };
 }
 

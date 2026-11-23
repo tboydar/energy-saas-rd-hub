@@ -38,7 +38,7 @@ export const zh = {
 
   // common
   "common.cancel": "取消",
-  "common.save": "儲存",
+  "common.save": "儲存變更",
   "common.close": "關閉",
   "common.copy": "複製",
   "common.copied": "已複製到剪貼簿",
@@ -87,22 +87,19 @@ export const zh = {
   "perm.rbac.edit": "編輯權限矩陣",
 
   // dash
-  "dash.lead": "研發團隊這一週的交付節奏、品質，以及資料平台的即時健康狀況。",
   "dash.dora": "DORA 四項指標",
   "dash.delivery": "交付與品質",
   "dash.vsLast": "較前週",
   "dash.factory": "能源資料工廠",
-  "dash.factoryHint": "拖曳可旋轉、滾輪可縮放；點設備或標籤，看它的即時數據。",
-  "dash.legend": "原料方塊是原始電力資料，沖壓機是資料處理管線，發光成品是分析結果與報表。輸送帶速度跟著吞吐量變化。",
+  "dash.factoryHint": "拖曳旋轉，滾輪縮放，點設備看數據。",
   "dash.lowFx": "降低特效",
   "dash.resetView": "重置視角",
   "dash.zoomIn": "放大",
   "dash.zoomOut": "縮小",
   "dash.loading3d": "正在載入 3D 場景…",
   "dash.no3d": "這個瀏覽器無法啟用 WebGL，3D 場景沒有載入。其他功能不受影響。",
-  "dash.scale": "模型比例 1:200",
-  "dash.pick": "點一個設備",
-  "dash.pickHint": "每個設備代表資料平台的一段。點模型或標籤後，相機會平滑移過去，這裡會顯示它的即時數據、負責小組與相關任務。",
+  "dash.pick": "選一個設備",
+  "dash.pickHint": "點模型上的設備，或從下面選。",
   "dash.throughput": "吞吐量",
   "dash.latency": "延遲",
   "dash.error": "錯誤率",
@@ -125,7 +122,7 @@ export const zh = {
   "dash.perDay": "推估單日",
   "dash.perSec": "筆／秒",
   "dash.points": "筆",
-  "dash.openSystems": "看平台架構與事件",
+  "dash.openSystems": "平台架構與事件",
 
   // status
   "status.backlog": "Backlog",
@@ -139,7 +136,6 @@ export const zh = {
   "flow.loading": "正在載入流程圖…",
 
   // team
-  "team.lead": "8 位成員的負載、技能與成長。負載超過容量時會標示出來，方便及早調整。",
   "team.tab.members": "成員",
   "team.tab.org": "組織圖",
   "team.tab.hiring": "招募",
@@ -167,7 +163,7 @@ export const zh = {
   "team.noteSaved": "已儲存 1:1 紀錄",
   "team.noteEmpty": "請先寫下談了什麼",
   "team.feedback": "績效回饋草稿",
-  "team.feedbackHint": "草稿只存在這個瀏覽器。「AI 產生草稿」依任務、技能與 1:1 紀錄用規則組出初稿，沒有呼叫 LLM。",
+  "team.feedbackHint": "草稿存在這個瀏覽器。初稿由規則從任務、技能與 1:1 紀錄組成，沒有呼叫 LLM。",
   "team.aiDraft": "AI 產生草稿",
   "team.saveDraft": "儲存草稿",
   "team.draftSaved": "已儲存回饋草稿",
@@ -180,8 +176,8 @@ export const zh = {
   "team.field.capacity": "每個 Sprint 的容量（點）",
   "team.field.active": "在職",
   "team.memberSaved": "已更新成員資料",
-  "team.org.lead": "研發主管帶 3 個小組、8 位成員。節點顏色代表負載；點成員可看詳細資料。",
-  "team.hiring.lead": "三個開放職缺的招募漏斗與候選人進度。候選人只用代號。",
+  "team.org.lead": "節點顏色代表負載。點成員看詳細資料。",
+  "team.hiring.lead": "候選人只顯示代號。",
   "team.hiring.open": "已開缺 {n} 天",
   "team.hiring.candidates": "候選人",
   "team.hiring.position": "職缺",
@@ -199,7 +195,6 @@ export const zh = {
   "hire.offer": "錄取",
 
   // proj
-  "proj.lead": "六個進行中的專案、任務看板、Sprint 規劃，以及對齊產品路線圖的季度 OKR。",
   "proj.tab.gantt": "專案與甘特圖",
   "proj.tab.kanban": "Kanban",
   "proj.tab.sprint": "Sprint",
@@ -215,16 +210,16 @@ export const zh = {
   "proj.col.next": "下一個里程碑",
   "proj.today": "今天",
   "proj.viewTasks": "看任務",
-  "proj.ganttCaption": "橫條是專案期間，深色部分是完成進度，菱形是里程碑，直線是今天（{date}）。",
+  "proj.ganttCaption": "深色是已完成的部分，菱形是里程碑，直線是今天（{date}）。",
 
   // kanban
   "kanban.project": "專案",
   "kanban.assignee": "負責人",
   "kanban.mine": "只看我的任務",
-  "kanban.hint.all": "你可以拖曳任何任務到別的欄位，也可以用卡片上的箭頭移動。點卡片可以改指派。",
-  "kanban.hint.squad": "你可以移動與指派「{squad}」專案的任務；其他小組的任務只能檢視。",
-  "kanban.hint.own": "你可以移動指派給自己的任務；其他任務只能檢視。",
-  "kanban.hint.none": "這個角色只能檢視看板，不能移動或指派任務。",
+  "kanban.hint.all": "可以拖曳任何一張卡，或用卡片上的箭頭移動。點卡片可以改指派。",
+  "kanban.hint.squad": "你可以移動與指派「{squad}」的任務，其他小組的只能看。",
+  "kanban.hint.own": "你可以移動指派給自己的任務，其他的只能看。",
+  "kanban.hint.none": "這個角色只能看看板，不能移動或指派任務。",
   "kanban.moved": "{id} 已移到 {status}",
   "kanban.noMove": "「{role}」不能移動這張任務",
   "kanban.empty": "沒有任務",
@@ -270,7 +265,6 @@ export const zh = {
   "sprint.velocity": "Sprint 速度",
   "sprint.completedSeries": "完成",
   "sprint.plan": "Sprint 規劃",
-  "sprint.planHint": "把 Backlog 的任務排入或移出這個 Sprint，上方的數字與圖表會即時更新。",
   "sprint.inSprint": "已排入（{p} 點）",
   "sprint.candidates": "可排入的 Backlog",
   "sprint.add": "排入",
@@ -294,7 +288,7 @@ export const zh = {
   "okr.title": "{q} 目標與關鍵結果",
   "okr.editHint": "拖動滑桿調整關鍵結果的進度。",
   "okr.align": "對齊圖",
-  "okr.alignHint": "由左到右：專案 → 路線圖項目 → 目標。有「調整 OKR」權限時，可以從路線圖項目右側的橘色圓點拉線到另一個目標，改變它對齊的 Objective。",
+  "okr.alignHint": "左到右是專案、路線圖項目、目標。從路線圖項目右邊的橘色圓點拉線到另一個目標，可以改它對齊的 Objective（需要「調整 OKR」權限）。",
   "okr.realigned": "「{item}」已改為對齊「{obj}」",
   "okr.roadmap": "產品路線圖",
   "okr.rm.done": "已完成",
@@ -306,9 +300,8 @@ export const zh = {
   "okr.kind.objective": "目標",
 
   // sys
-  "sys.lead": "資料平台從場站到報表的每一段、每秒更新的即時流量，以及線上事件的處理流程。",
   "sys.arch": "資料平台架構",
-  "sys.archHint": "每個節點是資料流的一段，數字每秒更新。點節點可以選取它，再注入異常或到 3D 工廠查看。",
+  "sys.archHint": "數字每秒更新。點一個節點，可以對它注入異常，或到 3D 工廠看它。",
   "sys.pickStage": "點上方任一節點來選取一段。",
   "sys.view3d": "在 3D 工廠查看",
   "sys.inject": "注入異常",
@@ -321,7 +314,7 @@ export const zh = {
   "sys.edge.query": "查詢",
   "sys.edge.rollup": "彙總",
   "sys.live": "即時模擬",
-  "sys.liveHint": "每秒為每個設備產生一筆彙總值，是「單日數億筆」的縮小版。圖上的紅點是 z-score 偵測到異常的時刻。",
+  "sys.liveHint": "每個設備每秒一筆彙總值，模擬單日 3 億筆的資料流。紅點是偵測到異常的時刻。",
   "sys.zscore": "z-score =（目前值 − 最近 40 筆的平均）÷ 標準差；連續 2 筆的絕對值都達到 3 才視為異常，避免單點雜訊誤報。",
   "sys.chart.tp": "接入吞吐量（筆／秒）",
   "sys.chart.lat": "端到端延遲（毫秒）",
@@ -332,7 +325,7 @@ export const zh = {
   "sys.col.metric": "指標",
   "sys.col.value": "數值",
   "sys.incident": "事件管理",
-  "sys.incidentLead": "模擬一次線上事件：觸發後依序指派、處理、恢復，最後寫事後檢討。事件期間對應的設備會變慢，3D 工廠會閃紅燈、冒灰煙。",
+  "sys.incidentLead": "事件恢復之前，受影響的設備會變慢，3D 工廠會閃紅燈、冒灰煙。",
   "sys.scenario": "事件劇本",
   "sys.simulate": "模擬線上事件",
   "sys.noActive": "目前沒有進行中的事件。",
@@ -362,8 +355,8 @@ export const zh = {
   "sys.mttr": "復原時間",
   "sys.minutes": "{n} 分鐘",
   "sys.compressed": "Demo 把時間壓縮了：1 秒算 1 分鐘。",
-  "sys.pm": "Postmortem 範本",
-  "sys.pmHint": "範本已依這次事件自動帶入，可以直接修改，離開輸入框時會自動儲存。",
+  "sys.pm": "事後檢討（Postmortem）",
+  "sys.pmHint": "內容已從這次事件帶入。離開輸入框時自動儲存。",
   "sys.pmReset": "重新套用範本",
   "sys.pmCopy": "複製 Markdown",
   "sys.history": "事件紀錄",
@@ -374,7 +367,6 @@ export const zh = {
   "sys.toast.injected": "已對 {tag} 注入 4 秒的異常",
 
   // collab
-  "collab.lead": "PM 與客服把客戶需求送進來，研發評估價值、工時與風險後轉成工程任務；每週再用一份報告把風險與資源需求講清楚。",
   "collab.flow": "需求流程",
   "collab.flowHint": "點節點可以篩選下方的需求清單。",
   "collab.stage.intake": "需求入口",
@@ -422,18 +414,16 @@ export const zh = {
   "collab.viewTask": "看任務 {id}",
   "collab.requester": "提出者",
   "collab.report": "AI 週報助理",
-  "collab.reportLead": "一鍵產生風險與資源需求報告。內容完全依目前的資料用規則組成，沒有呼叫 LLM；在其他頁面改了資料（例如移動任務、觸發事件）再產生一次，內容會跟著變。",
+  "collab.reportLead": "週報由規則從目前的資料組成，沒有呼叫 LLM。移動任務或觸發事件後再產生，內容會跟著變。",
   "collab.generate": "產生本週週報",
   "collab.regenerate": "重新產生",
   "collab.copyMd": "複製 Markdown",
   "collab.reportEmpty": "還沒有產生週報。",
-  "collab.generating": "正在整理資料…",
-  "collab.insights": "這次抓到的重點",
+  "collab.insights": "目前資料裡有",
   "collab.risks": "{n} 項風險",
   "collab.asks": "{n} 項資源需求或建議",
 
   // gov
-  "gov.lead": "技術決策怎麼留下紀錄、程式碼怎麼把關、技術債怎麼排序，以及一次變更怎麼走到正式環境。",
   "gov.tab.adr": "架構決策（ADR）",
   "gov.tab.review": "Code Review",
   "gov.tab.quality": "品質與技術債",
@@ -458,7 +448,7 @@ export const zh = {
   "adr.statusSaved": "{id} 的狀態已更新",
 
   // review
-  "review.lead": "等待 Review 的 PR。等超過 24 小時的會標示出來：Review 佇列正是這個 Sprint 落後的主因。核准後，關聯的任務會自動移到 Done。",
+  "review.lead": "核准 PR 後，關聯的任務會移到 Done；要求修改則退回 In Progress。",
   "review.col.pr": "PR",
   "review.col.people": "作者與 Reviewer",
   "review.col.size": "變更行數",
@@ -496,7 +486,7 @@ export const zh = {
 
   // debt
   "debt.title": "技術債清單：影響 × 成本",
-  "debt.hint": "圓點是每一項技術債。左上角「影響大、成本低」最值得先還。",
+  "debt.hint": "左上角影響大、成本低，先還這一區。",
   "debt.impact": "影響",
   "debt.cost": "成本",
   "debt.q.first": "先做",
@@ -510,7 +500,7 @@ export const zh = {
   "debt.planned": "{id} 已轉成任務 {task}",
 
   // cicd
-  "cicd.lead": "一次變更從 build 走到正式環境的路徑。Test 階段第一次會因為不穩定測試而失敗，可以重跑；上正式環境前需要研發主管核准。",
+  "cicd.lead": "Test 階段第一次一定失敗（模擬不穩定測試），重跑才會通過。上 Production 前要有人核准發版。",
   "cicd.run": "執行 Pipeline",
   "cicd.change": "要發版的變更",
   "cicd.current": "執行中：{id}　{title}",
@@ -544,8 +534,7 @@ export const zh = {
   "cicd.busy": "已經有 Pipeline 在執行中",
 
   // rbac
-  "rbac.lead": "每個角色能看哪些頁面、能做哪些事。切換上方的「模擬登入」，選單與按鈕會依這張表立刻改變。",
-  "rbac.editHint": "勾選即可調整權限，變更立刻生效並存在這個瀏覽器。有鎖頭的格子不能取消，避免把自己鎖在門外。",
+  "rbac.editHint": "勾選後立刻生效，設定存在這個瀏覽器。有鎖頭的格子不能取消。",
   "rbac.readonly": "只有具備「{perm}」權限的角色可以修改這張表；目前以「{role}」登入，所以是唯讀。",
   "rbac.reset": "還原預設矩陣",
   "rbac.resetDone": "已還原預設權限",
@@ -571,10 +560,9 @@ export const zh = {
   "rbac.changed": "已更新「{role}」的權限：{perm}",
 
   // about
-  "about.lead": "一個純前端的作品集 Demo：用一支虛構的能源 SaaS 研發團隊，示範研發主管每天在做的事。",
   "about.fictionalTitle": "所有資料皆為虛構",
-  "about.fictionalBody": "站內的公司、客戶、場站、成員、指標、事件與任務，全部是為了展示而編造的假資料（mock data），不對應任何真實的公司、客戶或個人。沒有後端，也沒有任何 API 金鑰；你的操作只存在這個瀏覽器的 localStorage，按右上角「重設 Demo 資料」就會回到初始狀態。",
-  "about.map": "這個作品對應研發主管的哪些職責",
+  "about.fictionalBody": "這裡的公司、客戶、場站、成員、指標、事件與任務都是為展示編造的假資料，不對應任何真實的公司、客戶或個人。網站沒有後端，也沒有 API 金鑰。你的操作只存在這個瀏覽器，按右上角的「重設 Demo 資料」會回到初始狀態。",
+  "about.map": "對應研發主管的職責",
   "about.col.duty": "職責",
   "about.col.where": "在哪一頁",
   "about.col.how": "怎麼呈現",
@@ -592,8 +580,8 @@ export const zh = {
   "about.duty.incidentHow": "從觸發、指派、處理、恢復到 Postmortem 的完整流程；事件期間 3D 工廠同步閃紅燈、冒灰煙。",
   "about.duty.data": "高資料量時序資料平台",
   "about.duty.dataHow": "單日 3 億筆的資料流：互動架構圖、每秒更新的吞吐量、延遲與錯誤率，以及用 3D 微縮工廠呈現的資料管線。",
-  "about.sdlc": "研發流程全景",
-  "about.sdlcHint": "這張圖同時是網站地圖：點任一節點會跳到 Demo 裡對應的頁面。",
+  "about.sdlc": "研發流程",
+  "about.sdlcHint": "點節點會跳到對應的頁面。",
   "about.n.request": "需求",
   "about.n.requestSub": "PM／CS 提出，研發評估",
   "about.n.plan": "規劃",
@@ -631,6 +619,46 @@ export const zh = {
 
   // dash
   "dash.canvasLabel": "等距微縮能源資料工廠的 3D 模型。設備可以用下方的標籤按鈕選取。",
+
+  // nav
+  "nav.skip": "跳到主要內容",
+
+  // dash
+  "dash.sum": "{sprint} 第 {day} 天，完成 {done}／{total} 點。",
+  "dash.sumCalm": "目前沒有線上事件。",
+  "dash.sumIncident": "{id} 處理中。",
+
+  // team
+  "team.sum": "{n} 位工程師，{s} 個小組。",
+
+  // proj
+  "proj.sum": "{n} 個專案，{risk} 個有風險。",
+  "proj.sumBehind": "{sprint} 落後理想線 {gap} 點。",
+
+  // gov
+  "gov.sum": "{adr} 份 ADR，{prop} 份還在提案。{pr} 個 PR 待審，{stale} 個等了超過 24 小時。",
+
+  // sys
+  "sys.sumCalm": "目前沒有線上事件。上一次是 {id}，{n} 分鐘後恢復。",
+  "sys.sumOpen": "{id}（{sev}）處理中，目前階段：{stage}。",
+
+  // collab
+  "collab.sum": "{n} 件需求等待評估。",
+  "collab.sumNone": "沒有等待評估的需求。",
+
+  // rbac
+  "rbac.sum": "{r} 個角色，{p} 項權限。",
+
+  // dash
+  "dash.keyTitle": "模型對照",
+  "dash.key.raw": "灰色方塊",
+  "dash.key.rawIs": "原始電力資料",
+  "dash.key.press": "沖壓機",
+  "dash.key.pressIs": "資料處理管線",
+  "dash.key.product": "發光方塊",
+  "dash.key.productIs": "分析結果與報表",
+  "dash.key.belt": "輸送帶速度",
+  "dash.key.beltIs": "資料吞吐量",
 } as const;
 
 export type I18nKey = keyof typeof zh;

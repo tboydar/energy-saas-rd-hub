@@ -19,7 +19,6 @@ export interface Member {
   squad: SquadId;
   systemRole: RoleId;
   active: boolean;
-  hue: number;
   capacity: number;
   skills: Record<SkillKey, number>;
   okrProgress: number;

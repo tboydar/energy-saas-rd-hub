@@ -1,7 +1,7 @@
 import { shortDate } from '../core/date';
-import { getLang, t, tx } from '../core/i18n';
+import { getLang, sentences, t, tx } from '../core/i18n';
 import { href, type Route } from '../core/router';
-import { memberById } from '../core/selectors';
+import { activeIncident, activeSprint, memberById, sprintStats } from '../core/selectors';
 import { store } from '../core/store';
 import type { DeviceId, MetricKey } from '../core/types';
 import { SQUADS } from '../mock/members';
@@ -11,7 +11,7 @@ import type { FactoryHandle, FactoryLabel } from '../three/factory';
 import { $, compact, html, num, on, raw, setHtml, toast, type Safe } from '../ui/dom';
 import { icon } from '../ui/icons';
 import { ChartBag, loadCharts, loadFactory } from '../ui/lazy';
-import { statusChip } from '../ui/widgets';
+import { pageHead, statusChip } from '../ui/widgets';
 
 // 總覽：工程指標銘牌帶 → 3D 能源資料工廠（含設備小卡與即時流量）→ 近 12 週趨勢。
 
@@ -62,8 +62,18 @@ export function mount(root: HTMLElement, route: Route): () => void {
   const dora = METRIC_KEYS.filter((k) => METRIC_META[k].dora);
   const rest = METRIC_KEYS.filter((k) => !METRIC_META[k].dora);
 
+  /** 標題下的那一行：Sprint 進度與有沒有線上事件，都從資料算出來。 */
+  function summary(): string {
+    const st = sprintStats(store.state, activeSprint(store.state));
+    const incident = activeIncident(store.state);
+    return sentences(
+      t('dash.sum', { sprint: st.sprint.name, day: st.todayIndex + 1, done: st.done, total: st.committed }),
+      incident ? t('dash.sumIncident', { id: incident.id }) : t('dash.sumCalm'),
+    );
+  }
+
   setHtml(root, html`<div class="page">
-    <header class="page-head"><h1>${t('nav.dashboard')}</h1><p class="lead">${t('dash.lead')}</p></header>
+    ${pageHead(t('nav.dashboard'), summary())}
     <section class="meters" aria-label="${t('dash.dora')}">
       <div class="meter-group"><h2 class="meter-cap">${t('dash.dora')}</h2><div class="meter-row" style="--n:${dora.length}">${dora.map(meter)}</div></div>
       <div class="meter-group"><h2 class="meter-cap">${t('dash.delivery')}</h2><div class="meter-row" style="--n:${rest.length}">${rest.map(meter)}</div></div>
@@ -79,12 +89,10 @@ export function mount(root: HTMLElement, route: Route): () => void {
           <button type="button" class="btn btn-sm" data-act="reset-view">${icon('focus', 16)}${t('dash.resetView')}</button>
           <label class="check"><input type="checkbox" id="lowfx" ${store.prefs.lowFx ? raw('checked') : ''} />${t('dash.lowFx')}</label>
         </div>
-        <div class="stage-note">${t('dash.scale')}</div>
       </div>
       <aside class="device-card" id="device-card" aria-live="off"></aside>
       <dl class="live-strip" id="live-strip"></dl>
     </section>
-    <p class="legend-note">${t('dash.legend')}</p>
     <section class="panel">
       <div class="panel-head"><h2>${t('dash.trends')}</h2><a class="btn btn-sm" href="${href('/systems')}">${t('dash.openSystems')}</a></div>
       <div class="charts" id="charts">${METRIC_KEYS.map((k) => {
@@ -101,7 +109,10 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const tick = engine.latest;
     if (!selected) {
       setHtml(card, html`<h3>${t('dash.pick')}</h3><p class="muted small">${t('dash.pickHint')}</p>
-        <div class="task-links">${store.state.devices.map((d) => html`<a href="${href('/dashboard', { device: d.id })}" data-device="${d.id}"><span class="tag">${d.tag}</span><span>${tx(d.name)}</span><span style="margin-left:auto">${statusOf(tick.devices[d.id])}</span></a>`)}</div>`);
+        <div class="task-links">${store.state.devices.map((d) => html`<a href="${href('/dashboard', { device: d.id })}" data-device="${d.id}"><span class="tag">${d.tag}</span><span>${tx(d.name)}</span><span style="margin-left:auto">${statusOf(tick.devices[d.id])}</span></a>`)}</div>
+        <div><h4 class="small muted">${t('dash.keyTitle')}</h4><dl class="kv key">
+          <dt>${t('dash.key.raw')}</dt><dd>${t('dash.key.rawIs')}</dd><dt>${t('dash.key.press')}</dt><dd>${t('dash.key.pressIs')}</dd>
+          <dt>${t('dash.key.product')}</dt><dd>${t('dash.key.productIs')}</dd><dt>${t('dash.key.belt')}</dt><dd>${t('dash.key.beltIs')}</dd></dl></div>`);
       return;
     }
     const d = store.state.devices.find((x) => x.id === selected)!;
@@ -198,7 +209,12 @@ export function mount(root: HTMLElement, route: Route): () => void {
     store.setPrefs({ lowFx: low });
     factory?.setLowFx(low);
   });
-  const offStore = store.subscribe((kind) => { if (kind === 'state') renderCard(); });
+  const offStore = store.subscribe((kind) => {
+    if (kind !== 'state') return;
+    renderCard();
+    const sum = $('#page-sum', root);
+    if (sum) sum.textContent = summary();
+  });
 
   // 3D 與圖表都等首屏畫完、瀏覽器有空時才載入
   const idle = (fn: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 200));

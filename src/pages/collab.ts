@@ -22,7 +22,6 @@ const score = (r: Pick<DemandRequest, 'value' | 'effort' | 'risk'>) => Math.roun
 export function mount(root: HTMLElement): () => void {
   let filter: string | null = null;
   let flow: FlowHandle | null = null;
-  let timer = 0;
   const form = { title: '', desc: '', customer: 0, kind: 'feature' as DemandRequest['kind'] };
 
   function counts() {
@@ -75,7 +74,7 @@ export function mount(root: HTMLElement): () => void {
         <div class="score" title="${t('collab.scoreHint')}"><span class="small muted">${t('collab.score')}</span><b data-score="${r.id}">${s.toFixed(1)}</b><span class="small" data-advice="${r.id}">${advice}</span></div>
         ${open ? html`<div class="row">
           ${actionBtn({ act: 'save-eval', label: t('collab.saveEval'), perm: 'request.triage', cls: 'btn-sm', data: { id: r.id } })}
-          ${actionBtn({ act: 'convert', label: t('collab.convert'), perm: 'request.triage', cls: 'btn-sm btn-primary', data: { id: r.id } })}
+          ${actionBtn({ act: 'convert', label: t('collab.convert'), perm: 'request.triage', cls: 'btn-sm', data: { id: r.id } })}
           ${actionBtn({ act: 'decline', label: t('collab.decline'), perm: 'request.triage', cls: 'btn-sm btn-quiet', data: { id: r.id } })}
           <select data-project="${r.id}" aria-label="${t('collab.convertTo')}" title="${t('collab.convertTo')}" ${triage ? '' : raw('disabled')}>${store.state.projects.map((p) => html`<option value="${p.id}" ${p.id === 'p3' ? raw('selected') : ''}>${tx(p.name)}</option>`)}</select>
         </div>` : ''}</div>
@@ -92,15 +91,22 @@ export function mount(root: HTMLElement): () => void {
   function reportHtml(): Safe {
     const text = store.state.weeklyReport;
     const found = analyze(store.state, getLang());
-    return html`<div class="panel-head"><h2>${icon('spark', 18)} ${t('collab.report')}</h2>
-        ${actionBtn({ act: 'generate', label: text ? t('collab.regenerate') : t('collab.generate'), perm: 'report.generate', cls: 'btn-primary', icon: 'spark' })}
+    return html`<div class="panel-head"><h2>${t('collab.report')}</h2>
+        ${actionBtn({ act: 'generate', label: text ? t('collab.regenerate') : t('collab.generate'), perm: 'report.generate', cls: 'btn-primary' })}
         <button type="button" class="btn" data-act="copy-report" ${text ? '' : raw('disabled')}>${icon('copy', 16)}${t('collab.copyMd')}</button></div>
       <div class="panel-body stack"><p class="muted small" style="max-width:90ch">${t('collab.reportLead')}</p>
         <div class="row"><span class="small muted">${t('collab.insights')}</span>${statusChip(found.risks.some((r) => r.level === 'high') ? 'crit' : 'warn', t('collab.risks', { n: found.risks.length }))}${statusChip('info', t('collab.asks', { n: found.asks.length }))}</div>
         ${text ? html`<pre class="md" id="report" tabindex="0">${text}</pre>` : html`<p class="empty" id="report">${t('collab.reportEmpty')}</p>`}</div>`;
   }
 
+  function summary(): string {
+    const n = store.state.requests.filter((r) => r.status === 'new').length;
+    return n ? t('collab.sum', { n }) : t('collab.sumNone');
+  }
+
   function render(): void {
+    const sum = $('#page-sum', root);
+    if (sum) sum.textContent = summary();
     setHtml($('#req-list', root)!, listHtml());
     setHtml($('#report-box', root)!, reportHtml());
     flow?.update(flowSpec(), filter);
@@ -108,7 +114,7 @@ export function mount(root: HTMLElement): () => void {
 
   const create = can('request.create');
   setHtml(root, html`<div class="page">
-    ${pageHead(t('nav.collab'), t('collab.lead'))}
+    ${pageHead(t('nav.collab'), summary())}
     <section class="stack" style="gap:6px"><h2 class="section-title">${t('collab.flow')}</h2><p class="muted small">${t('collab.flowHint')}</p><div class="flow is-short" id="req-flow" style="height:290px"></div></section>
     <div class="grid split">
       <section class="panel" id="req-list"></section>
@@ -127,24 +133,6 @@ export function mount(root: HTMLElement): () => void {
 
   flow = attachFlow($('#req-flow', root)!, flowSpec(), { layoutKey: 'requests', onNodeClick: (id) => { filter = filter === id ? null : id; render(); } });
   render();
-
-  /** 把週報一段一段「打」出來，模擬助理產生內容的過程（純前端效果）。 */
-  function typeOut(text: string): void {
-    clearInterval(timer);
-    timer = 0;
-    const box = $('#report-box', root)!;
-    setHtml(box, reportHtml());
-    const pre = $('#report', box);
-    if (!pre || store.prefs.lowFx) return;
-    const lines = text.split('\n');
-    let shown = 0;
-    pre.textContent = t('collab.generating');
-    timer = window.setInterval(() => {
-      shown = Math.min(lines.length, shown + 3);
-      pre.textContent = lines.slice(0, shown).join('\n');
-      if (shown >= lines.length) { clearInterval(timer); timer = 0; }
-    }, 40);
-  }
 
   const offs = [
     on(root, 'input', '#rq-title, #rq-desc, #rq-customer, #rq-kind', (_e, el) => {
@@ -207,7 +195,7 @@ export function mount(root: HTMLElement): () => void {
         case 'generate': {
           const text = generateWeeklyReport(store.state, getLang());
           store.update((s) => { s.weeklyReport = text; });
-          typeOut(text);
+          $('#report', root)?.scrollIntoView({ block: 'nearest' });
           break;
         }
         case 'copy-report':
@@ -215,11 +203,10 @@ export function mount(root: HTMLElement): () => void {
           break;
       }
     }),
-    store.subscribe((kind) => { if (kind === 'state') { setHtml($('#req-list', root)!, listHtml()); flow?.update(flowSpec(), filter); if (!timer) setHtml($('#report-box', root)!, reportHtml()); } }),
+    store.subscribe((kind) => { if (kind === 'state') render(); }),
   ];
 
   return () => {
-    clearInterval(timer);
     offs.forEach((off) => off());
     flow?.destroy();
   };

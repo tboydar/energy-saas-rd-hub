@@ -31,7 +31,7 @@ const PAGES: PageDef[] = [
 const LOGO = raw('<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 6.2v12.6L16 28 5 21.8V9.2z" fill="#ffc83d"/><path d="M16 15.4l11-6.2v12.6L16 28z" fill="#f0633d"/><path d="M16 15.4L5 9.2v12.6L16 28z" fill="#d9a520"/></svg>');
 
 export function mountShell(app: HTMLElement): void {
-  setHtml(app, html`<div class="shell"><aside class="sidebar" id="side"></aside><div class="main"><header class="topbar" id="top"></header><main id="view" tabindex="-1"></main></div></div>`);
+  setHtml(app, html`<a class="skip-link" href="#view" id="skip">${t('nav.skip')}</a><div class="shell"><aside class="sidebar" id="side"></aside><div class="main"><header class="topbar" id="top"></header><main id="view" tabindex="-1"></main></div></div>`);
   const side = $('#side', app)!;
   const top = $('#top', app)!;
   const view = $('#view', app)!;
@@ -48,13 +48,14 @@ export function mountShell(app: HTMLElement): void {
 
   function renderTop(): void {
     const { role, lang } = store.prefs;
+    $('#skip', app)!.textContent = t('nav.skip');
     const who = persona();
     const incident = activeIncident(store.state);
     setHtml(top, html`
       ${incident ? raw('<div class="hazard" aria-hidden="true"></div>') : ''}
       <div class="topbar-row">
         <div class="who">
-          <span class="avatar" style="--h:${ROLES.indexOf(role) * 62 + 20}" aria-hidden="true">${initials(who.name)}</span>
+          <span class="avatar ${who.squad ? `is-${who.squad}` : ''}" aria-hidden="true">${initials(who.name)}</span>
           <div class="who-text"><b>${tx(who.name)}</b><span>${tx(who.title)}</span></div>
         </div>
         <div class="tool">
@@ -140,6 +141,11 @@ export function mountShell(app: HTMLElement): void {
     if (incidentChanged && !identityChanged && kind !== 'reset') renderTop();
   });
 
+  // 「跳到主要內容」：不改網址（網址的 # 已經用來做路由），直接把焦點移到內容區
+  $('#skip', app)!.addEventListener('click', (event) => {
+    event.preventDefault();
+    view.focus();
+  });
   onRouteChange(() => void show());
   renderTop();
   void show();

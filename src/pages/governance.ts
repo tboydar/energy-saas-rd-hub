@@ -84,7 +84,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
         <td class="nowrap">${stale ? statusChip('crit', t('review.hours', { n: r.ageHours })) : html`<span class="num">${t('review.hours', { n: r.ageHours })}</span>`}</td>
         <td>${statusChip(r.ci === 'pass' ? 'ok' : r.ci === 'fail' ? 'crit' : 'warn', t(`review.ci.${r.ci}` as I18nKey))}</td>
         <td>${statusChip(r.risk === 'high' ? 'crit' : r.risk === 'med' ? 'warn' : 'mute', t(`review.risk.${r.risk}` as I18nKey))}</td>
-        <td>${r.status === 'open' ? html`<div class="row" style="flex-wrap:nowrap">${actionBtn({ act: 'pr-approve', label: t('review.approve'), perm: 'review.decide', cls: 'btn-sm btn-primary', icon: 'check', data: { id: r.id } })}${actionBtn({ act: 'pr-changes', label: t('review.changes'), perm: 'review.decide', cls: 'btn-sm', data: { id: r.id } })}</div>`
+        <td>${r.status === 'open' ? html`<div class="row" style="flex-wrap:nowrap">${actionBtn({ act: 'pr-approve', label: t('review.approve'), perm: 'review.decide', cls: 'btn-sm', icon: 'check', data: { id: r.id } })}${actionBtn({ act: 'pr-changes', label: t('review.changes'), perm: 'review.decide', cls: 'btn-sm', data: { id: r.id } })}</div>`
           : html`<div class="row" style="flex-wrap:nowrap">${statusChip(r.status === 'approved' ? 'ok' : 'warn', t(`review.st.${r.status}` as I18nKey))}${actionBtn({ act: 'pr-reopen', label: t('review.reopen'), perm: 'review.decide', cls: 'btn-sm btn-quiet', data: { id: r.id } })}</div>`}</td></tr>`;
     };
     return html`<p class="muted" style="max-width:90ch">${t('review.lead')}</p><section class="panel"><div class="table-wrap"><table class="table">
@@ -234,11 +234,18 @@ export function mount(root: HTMLElement, route: Route): () => void {
     }, STAGE_MS[running.name]);
   }
 
+  /** 標題下的那一行：ADR 與待審 PR 的數量。 */
+  function summary(): string {
+    const { state } = store;
+    const open = state.reviews.filter((r) => r.status === 'open');
+    return t('gov.sum', { adr: state.adrs.length, prop: state.adrs.filter((a) => a.status === 'proposed').length, pr: open.length, stale: open.filter((r) => r.ageHours >= 24).length });
+  }
+
   function render(): void {
     flow?.destroy();
     flow = null;
     setHtml(root, html`<div class="page">
-      ${pageHead(t('nav.governance'), t('gov.lead'))}
+      ${pageHead(t('nav.governance'), summary())}
       ${tabs([{ id: 'adr', label: t('gov.tab.adr') }, { id: 'review', label: t('gov.tab.review') }, { id: 'quality', label: t('gov.tab.quality') }, { id: 'cicd', label: t('gov.tab.cicd') }], tab)}
       ${tab === 'review' ? reviewTab() : tab === 'quality' ? qualityTab() : tab === 'cicd' ? cicdTab() : adrTab()}
     </div>`);
