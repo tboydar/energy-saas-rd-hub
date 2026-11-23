@@ -562,7 +562,7 @@ export const en: Record<I18nKey, string> = {
 
   // about
   "about.fictionalTitle": "All data is fictional",
-  "about.fictionalBody": "Every company, customer, site, person, metric, incident and task here is mock data made up for this demo. None of it matches a real company, customer or individual. The site has no backend and no API key. What you do stays in this browser, and \"Reset demo data\" at the top right restores the initial state.",
+  "about.fictionalBody": "Every company, customer, site, person, metric, incident and task here is mock data made up for this demo. None of it matches a real company, customer or individual. If a name happens to match a real company or person, that is a coincidence. The site has no backend and no API key. What you do stays in this browser, and \"Reset demo data\" at the top right restores the initial state.",
   "about.map": "Engineering manager responsibilities it covers",
   "about.col.duty": "Responsibility",
   "about.col.where": "Where",

@@ -1,0 +1,42 @@
+name: Windows browser check
+
+# 手動執行。在 Windows 上用 Chromium 對已部署的網站跑同一套 E2E，
+# 並上傳實際用到的字型清單與截圖。這個流程不影響部署。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      E2E_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+      FONT_REPORT_DIR: windows-report
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install browser
+        run: bunx playwright install chromium
+
+      - name: E2E tests against the deployed site
+        run: bun run test:e2e
+
+      - name: Upload font report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-report
+          path: |
+            windows-report
+            test-results
+          if-no-files-found: warn

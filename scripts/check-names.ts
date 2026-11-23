@@ -1,24 +1,24 @@
 // 查核站上的假名稱有沒有剛好和真實的公司或知名人物同名。
-// 執行：bun run check:names（會連到下列公開資料來源，約需 10 分鐘，主要花在商工登記的 33 種狀態）
+// 執行：bun run check:names（會連到下列公開資料來源，約需 10 分鐘，主要花在公司登記的 33 種狀態）
 //
 // 來源：
-//   1. 經濟部商工登記公示資料（公司登記，全部 33 種登記狀態）— 中文組織名，查「名稱包含這些字」
-//   2. GLEIF 全球法人機構識別碼 — 英文組織名
-//   3. Wikidata — 所有名稱，查標籤或別名完全相同的項目
-//   4. 中文維基百科 — 中文名稱，查內文出現這個詞的條目
+//   1. 經濟部商工登記公示資料，公司登記 — 中文組織名，查「名稱包含這些字」。
+//      官方的「公司登記_公司狀態代碼對照表」共有 01 到 33 這 33 個狀態代碼，全部都查。
+//   2. 經濟部商工登記公示資料，分公司登記（存活、非存活）— 中文組織名
+//   3. g0v 台灣公司資料 — 中文組織名。它收錄公司登記與商業登記（行號），不分狀態。
+//      商業登記的官方關鍵字查詢 API 需要申請 IP 授權，所以改用這個來源。
+//   4. GLEIF 全球法人機構識別碼 — 英文組織名
+//   5. Wikidata — 所有名稱，查標籤或別名完全相同的項目
+//   6. 中文維基百科 — 中文名稱，查內文出現這個詞的條目
 //
 // 名稱直接從假資料取得，所以新增或修改名稱後不必改這支腳本。
 // 送出去的只有站上的虛構名稱；查到的結果只印公司或條目名稱。
-// 注意：查不到不等於世界上不存在，這只是一套固定範圍的盡職查核。
+// 這套查核找的是「剛好同名」。站上的資料本來就全部是編的，沒有任何一筆來自真實來源。
 
-import { buildInitialState } from '../src/mock';
-import { SITE } from '../src/mock/devices';
-import { PERSONAS } from '../src/mock/members';
-import { CUSTOMERS } from '../src/mock/requests';
+import { collectNames } from './mock-names';
 
 const UA = { 'User-Agent': 'name-check/1.0 (portfolio demo verification)' };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const uniq = (list: string[]) => [...new Set(list)];
 
 async function getJson(url: string, tries = 5): Promise<unknown | null> {
   for (let i = 0; i < tries; i++) {
@@ -44,6 +44,25 @@ async function registry(keyword: string, status: string): Promise<string[] | nul
   return (rows as { Company_Name: string; Company_Status_Desc: string }[]).map((c) => `${c.Company_Name}（${c.Company_Status_Desc}）`);
 }
 
+/** 分公司登記：status 是 00（存活）或 99（非存活）。 */
+async function branchRegistry(keyword: string, status: '00' | '99'): Promise<string[] | null> {
+  const filter = encodeURIComponent(`Branch_Office_Name like ${keyword} and Status_Type_Code eq ${status}`);
+  const rows = await getJson(`https://data.gcis.nat.gov.tw/od/data/api/20B4A6C1-1C0C-4E80-91BA-6DF97D2D9FC9?$format=json&$filter=${filter}&$skip=0&$top=50`, 3);
+  if (!Array.isArray(rows)) return null;
+  return (rows as { Branch_Office_Name: string; Branch_Office_Status_Desc: string }[]).map((c) => `${c.Branch_Office_Name}（${c.Branch_Office_Status_Desc}）`);
+}
+
+/** g0v 台灣公司資料：公司名稱或商業名稱包含 keyword 的登記，不分狀態。 */
+async function g0vCompanies(keyword: string): Promise<string[] | null> {
+  const j = (await getJson(`https://company.g0v.ronny.tw/api/search?q=${encodeURIComponent(keyword)}`)) as { data?: Record<string, unknown>[]; found?: number } | null;
+  if (!j || !Array.isArray(j.data)) return null;
+  const clean = (value: unknown) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, 24);
+  const rows = j.data.map((d) => `${clean(d['公司名稱'] ?? d['商業名稱'])}（${clean(d['公司狀況'] ?? d['登記現況'])}）`);
+  // found 是總筆數，data 只有第一頁；筆數不同時補一行說明
+  if ((j.found ?? rows.length) > rows.length) rows.push(`另有 ${(j.found ?? 0) - rows.length} 筆`);
+  return rows;
+}
+
 async function gleif(name: string): Promise<string[] | null> {
   const j = (await getJson(`https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=${encodeURIComponent(name)}&page[size]=5`)) as { data?: { attributes: { entity: { legalName: { name: string } } } }[] } | null;
   return j?.data ? j.data.map((d) => d.attributes.entity.legalName.name) : null;
@@ -62,20 +81,18 @@ async function zhWikipedia(name: string): Promise<string[] | null> {
 }
 
 // ── 從假資料取出所有名稱
-const state = buildInitialState();
-const orgsZh = uniq([...CUSTOMERS.map((c) => c.zh), SITE.zh.split('・')[0], ...state.requests.map((r) => r.customer.zh)]);
-const orgsEn = uniq([...CUSTOMERS.map((c) => c.en), SITE.en.split(',')[0], ...state.requests.map((r) => r.customer.en)]);
-const personas = Object.values(PERSONAS).filter((p) => p.name.zh !== '系統管理員');
-const peopleZh = uniq([...state.members.map((m) => m.name.zh), ...personas.map((p) => p.name.zh)]);
-const peopleEn = uniq([...state.members.map((m) => m.name.en), ...personas.map((p) => p.name.en)]);
+const { orgsZh, orgsEn, peopleZh, peopleEn } = collectNames();
 
 // ── 對照組：用一般名詞查，每個來源都應該查得到東西。
 // 查不到代表查詢本身壞了（例如被限流），後面的「0 筆」就不能當證據。
 // 刻意不用任何真實公司的名稱當關鍵字。
 console.log('對照組（確認每個來源真的查得到東西）');
 const controls: [string, string[] | null][] = [
-  ['商工登記「儲能」／核准設立', await registry('儲能', '01')],
-  ['商工登記「能源」／解散', await registry('能源', '04')],
+  ['公司登記「儲能」／核准設立', await registry('儲能', '01')],
+  ['公司登記「能源」／解散', await registry('能源', '04')],
+  ['分公司登記「能源」／存活', await branchRegistry('能源', '00')],
+  ['分公司登記「台北」／非存活', await branchRegistry('台北', '99')],
+  ['g0v 公司資料「儲能」', await g0vCompanies('儲能')],
   ['GLEIF「Wind Farm」', await gleif('Wind Farm')],
   ['Wikidata「風力發電廠」', await wikidata('風力發電廠', 'zh')],
   ['中文維基百科「風力發電廠」', await zhWikipedia('風力發電廠')],
@@ -97,19 +114,27 @@ async function check(source: string, name: string, query: Query): Promise<string
   else for (const row of rows) hits.push(`${source}／${name} → ${row}`);
   return rows;
 }
+// 官方「公司登記_公司狀態代碼對照表」（製表日期 2026/11/23）的全部代碼：01 核准設立 … 33 清理完結
 const STATUSES = Array.from({ length: 33 }, (_, i) => String(i + 1).padStart(2, '0'));
 
-console.log(`\n中文組織名（${orgsZh.length} 個）：商工登記 33 種狀態、Wikidata、中文維基百科`);
+console.log(`\n中文組織名（${orgsZh.length} 個）：公司登記 33 種狀態、分公司登記、g0v 公司資料（含商業登記）、Wikidata、中文維基百科`);
 for (const name of orgsZh) {
   let found = 0;
   for (const status of STATUSES) {
-    const rows = await check(`商工登記[${status}]`, name, () => registry(name, status));
+    const rows = await check(`公司登記[${status}]`, name, () => registry(name, status));
     found += rows?.length ?? 0;
     await sleep(400);
   }
+  let branches = 0;
+  for (const status of ['00', '99'] as const) {
+    const rows = await check(`分公司登記[${status}]`, name, () => branchRegistry(name, status));
+    branches += rows?.length ?? 0;
+    await sleep(400);
+  }
+  const g0v = await check('g0v 公司資料', name, () => g0vCompanies(name));
   const wd = await check('Wikidata', name, () => wikidata(name, 'zh'));
   const wp = await check('中文維基百科', name, () => zhWikipedia(name));
-  console.log(`  ${name}：商工登記 ${found} 筆、Wikidata ${wd?.length ?? '待重試'} 筆、維基百科 ${wp?.length ?? '待重試'} 篇`);
+  console.log(`  ${name}：公司登記 ${found} 筆、分公司 ${branches} 筆、g0v ${g0v?.length ?? '待重試'} 筆、Wikidata ${wd?.length ?? '待重試'} 筆、維基百科 ${wp?.length ?? '待重試'} 篇`);
 }
 
 console.log(`\n英文組織名（${orgsEn.length} 個）：GLEIF、Wikidata`);
