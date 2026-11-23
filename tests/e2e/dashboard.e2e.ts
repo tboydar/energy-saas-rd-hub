@@ -3,6 +3,9 @@ import { open } from './helpers';
 
 // 驗收：總覽的指標與趨勢圖；3D 場景點擊設備會聚焦並顯示資料小卡；介面可切換英文。
 
+// 3D 場景的載入時間：有 GPU 時不到一秒，用軟體算圖（CI）時可能要十幾秒
+const SCENE_TIMEOUT = 60_000;
+
 test('七張指標卡與七張近 12 週趨勢圖', async ({ page }) => {
   await open(page, '/dashboard');
   await expect(page.locator('.meter')).toHaveCount(7);
@@ -14,7 +17,7 @@ test('七張指標卡與七張近 12 週趨勢圖', async ({ page }) => {
 
 test('3D 場景載入後，點設備會顯示資料小卡，小卡的任務連結會跳到專案頁', async ({ page }) => {
   await open(page, '/dashboard');
-  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: SCENE_TIMEOUT });
   await expect(page.locator('.tag3d')).toHaveCount(6);
 
   await page.click('.tag3d[data-device="press"]');
@@ -32,23 +35,32 @@ test('3D 場景載入後，點設備會顯示資料小卡，小卡的任務連�
 
 test('點設備後相機是平滑移動過去的，不是瞬間跳過去', async ({ page }) => {
   await open(page, '/dashboard');
-  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: 20_000 });
-  const tag = page.locator('.tag3d[data-device="truck"]');
-  // 標籤的位置是每一幀由相機投影算出來的，所以它的移動軌跡就是相機的移動軌跡
-  const position = () => tag.evaluate((el) => (el as HTMLElement).style.transform);
-  const start = await position();
-  await tag.click();
-  const seen = new Set<string>([start]);
-  for (let i = 0; i < 12; i++) {
-    await page.waitForTimeout(100);
-    seen.add(await position());
-  }
-  expect(seen.size).toBeGreaterThan(4);
-  await page.waitForTimeout(1200);
-  const settled = await position();
-  await page.waitForTimeout(300);
-  expect(await position()).toBe(settled);
-  expect(settled).not.toBe(start);
+  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: SCENE_TIMEOUT });
+  await page.click('.tag3d[data-device="truck"]');
+  // 標籤的位置是每一幀由相機投影算出來的，所以它走過的位置就是相機走過的位置。
+  // 在頁面裡「逐幀」記錄，直到連續幾幀不再變動。用幀數而不是毫秒，
+  // 這樣不管電腦快慢（CI 沒有 GPU，每一幀都很久）結果都一樣。
+  const path = await page.evaluate(() => new Promise<string[]>((resolve) => {
+    const tag = document.querySelector<HTMLElement>('.tag3d[data-device="truck"]')!;
+    const seen = [tag.style.transform];
+    let still = 0;
+    let frames = 0;
+    const tick = () => {
+      const now = tag.style.transform;
+      if (now !== seen[seen.length - 1]) {
+        seen.push(now);
+        still = 0;
+      } else {
+        still++;
+      }
+      if (still >= 10 || ++frames >= 400) resolve(seen);
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }));
+  // 瞬間跳過去只會有起點與終點兩個位置；平滑移動會經過很多個中間位置
+  expect(path.length).toBeGreaterThan(5);
+  expect(path[path.length - 1]).not.toBe(path[0]);
 });
 
 test('切換英文：介面與假資料都換成英文，重新整理後維持', async ({ page }) => {
@@ -68,7 +80,7 @@ test('切換英文：介面與假資料都換成英文，重新整理後維持',
 
 test('「降低特效」的設定會保留', async ({ page }) => {
   await open(page, '/dashboard');
-  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('.stage-canvas')).toBeVisible({ timeout: SCENE_TIMEOUT });
   await page.check('#lowfx');
   await page.reload();
   await expect(page.locator('#lowfx')).toBeChecked();

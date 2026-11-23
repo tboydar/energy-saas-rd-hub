@@ -7,6 +7,9 @@ import { defineConfig } from '@playwright/test';
 const PORT = 4173;
 const external = process.env.E2E_BASE_URL;
 const ci = !!process.env.CI;
+// CI 的機器沒有 GPU，3D 場景靠軟體算圖，畫面更新很慢。
+// 本機想重現同樣的情況：E2E_SOFTWARE_GL=1 bun run test:e2e
+const softwareGl = ci || !!process.env.E2E_SOFTWARE_GL;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -16,16 +19,16 @@ export default defineConfig({
   forbidOnly: ci,
   retries: ci ? 1 : 0,
   reporter: ci ? [['github'], ['list']] : 'list',
-  timeout: 30_000,
-  expect: { timeout: 8_000 },
+  timeout: softwareGl ? 90_000 : 30_000,
+  expect: { timeout: softwareGl ? 20_000 : 8_000 },
   use: {
     baseURL: external ?? `http://localhost:${PORT}/`,
     viewport: { width: 1440, height: 900 },
     trace: 'retain-on-failure',
     // 本機直接用已安裝的 Chrome，不必下載 Playwright 的瀏覽器；CI 用 playwright install 裝的 Chromium
     channel: ci ? undefined : 'chrome',
-    // CI 的機器沒有 GPU：允許用軟體算圖跑 WebGL，3D 場景才建得起來
-    launchOptions: ci ? { args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } : {},
+    // 沒有 GPU 時允許用軟體算圖跑 WebGL，3D 場景才建得起來
+    launchOptions: softwareGl ? { args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--ignore-gpu-blocklist'] } : {},
   },
   webServer: external
     ? undefined
