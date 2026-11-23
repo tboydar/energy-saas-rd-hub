@@ -1,9 +1,10 @@
 import type { DemandRequest } from '../core/types';
 import { L } from './util';
 
-// PM／CS 提進來的需求。客戶名稱全部虛構；中英文名稱都對外搜尋過，確認沒有同名的真實公司。
+// PM／CS 提進來的需求。客戶名稱全部虛構。
+// 中文名稱查過經濟部商工登記資料（核准設立的公司），英文名稱查過 GLEIF，都沒有任何公司名稱包含這些字。
 export const CUSTOMERS = [
-  L('晴光能源', 'Fairglow Energy'),
+  L('晴樾能源', 'Fairglow Energy'),
   L('北風電廠', 'Northgale Power Plant'),
   L('霧島儲能', 'Mist Isle Storage'),
   L('星嶼微電網', 'Starreef Microgrid'),
