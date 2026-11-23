@@ -1,7 +1,7 @@
 import { draftFeedback } from '../ai/feedback';
 import { can } from '../core/auth';
 import { DEMO_TODAY } from '../core/date';
-import { getLang, plain, t, tx, type I18nKey } from '../core/i18n';
+import { comma, getLang, plain, t, tx, type I18nKey } from '../core/i18n';
 import { ROLES } from '../core/rbac';
 import type { Route } from '../core/router';
 import { memberLoad, type Load } from '../core/selectors';
@@ -61,7 +61,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const write = can('oneonone.write');
     const feedback = draft.feedback.get(m.id) ?? m.feedbackDraft;
     return html`<aside class="panel detail"><div class="panel-body stack">
-      <div class="detail-head">${avatar(m)}<div><h2>${tx(m.name)}</h2><p class="muted small">${tx(m.level)}，${tx(SQUADS[m.squad])}</p></div></div>
+      <div class="detail-head">${avatar(m)}<div><h2>${tx(m.name)}</h2><p class="muted small">${tx(m.level)}${comma()}${tx(SQUADS[m.squad])}</p></div></div>
       <div class="row">${loadChip(load)}<span class="small muted">${t('team.loadDetail', { c: load.committed, cap: load.capacity })}</span>
         <span style="margin-left:auto">${actionBtn({ act: 'manage', label: t('team.manage'), perm: 'member.manage', cls: 'btn-sm' })}</span></div>
       <div><h3 class="section-title">${t('team.skills')}</h3><div class="radar-box"><canvas id="radar" role="img" aria-label="${t('team.skills')}: ${SKILLS.map((k) => `${tx(SKILL_LABELS[k])} ${m.skills[k]}`).join(', ')}"></canvas></div></div>
@@ -71,12 +71,12 @@ export function mount(root: HTMLElement, route: Route): () => void {
           <ul class="check-list">${m.growthPlan.map((g) => html`<li><input type="checkbox" id="${g.id}" data-growth="${g.id}" ${g.done ? raw('checked') : ''} ${write ? '' : raw('disabled')} /><label for="${g.id}" class="${g.done ? 'is-done' : ''}">${tx(g.text)}</label></li>`)}</ul></div>
         <div><h3 class="section-title">${t('team.oneOnOne')}</h3>
           ${m.oneOnOnes.length ? m.oneOnOnes.map((o) => html`<div class="note">
-              <div class="note-meta"><span class="num">${o.date}</span><span>${t('team.mood')} <b class="num">${o.mood}／5</b></span></div>
+              <div class="note-meta"><span class="num">${o.date}</span><span>${t('team.mood')} <b class="num">${o.mood} / 5</b></span></div>
               <p>${tx(o.summary)}</p><dl><dt>${t('team.actions')}</dt><dd>${tx(o.actions)}</dd></dl></div>`) : html`<p class="muted small">${t('team.noOneOnOne')}</p>`}
         </div>
         <div class="stack"><h3 class="section-title">${t('team.addOneOnOne')}</h3>
           <div class="form-row">
-            <label class="field" style="flex:0 0 120px"><span>${t('team.mood')}</span><select id="note-mood" ${write ? '' : raw('disabled')}>${[1, 2, 3, 4, 5].map((n) => html`<option value="${n}" ${n === draft.mood ? raw('selected') : ''}>${n}／5</option>`)}</select></label>
+            <label class="field" style="flex:0 0 120px"><span>${t('team.mood')}</span><select id="note-mood" ${write ? '' : raw('disabled')}>${[1, 2, 3, 4, 5].map((n) => html`<option value="${n}" ${n === draft.mood ? raw('selected') : ''}>${n} / 5</option>`)}</select></label>
           </div>
           <label class="field"><span>${t('team.summary')}</span><textarea id="note-summary" ${write ? '' : raw('disabled')}>${draft.summary}</textarea></label>
           <label class="field"><span>${t('team.actions')}</span><textarea id="note-actions" style="min-height:56px" ${write ? '' : raw('disabled')}>${draft.actions}</textarea></label>

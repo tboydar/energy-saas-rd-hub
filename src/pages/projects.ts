@@ -1,6 +1,6 @@
 import { can, canAssignTask, canMoveTask, persona } from '../core/auth';
 import { daysBetween, DEMO_TODAY, shortDate } from '../core/date';
-import { getLang, plain, sentences, t, tx, type I18nKey } from '../core/i18n';
+import { comma, GAP, getLang, paren, plain, sentences, t, tx, type I18nKey } from '../core/i18n';
 import { href, type Route } from '../core/router';
 import { activeSprint, memberById, memberLoad, sprintStats, sprintTasks } from '../core/selectors';
 import { store } from '../core/store';
@@ -138,13 +138,13 @@ export function mount(root: HTMLElement, route: Route): () => void {
       <div class="modal-body">
         <dl class="kv"><dt>${t('task.project')}</dt><dd>${tx(project?.name)}</dd><dt>${t('task.type')}</dt><dd>${t(`task.type.${task.type}` as I18nKey)}</dd>
           <dt>${t('task.priority')}</dt><dd>${task.priority}</dd><dt>${t('task.points')}</dt><dd class="num">${task.points}</dd>
-          ${device ? html`<dt>${t('task.device')}</dt><dd><span class="tag">${device.tag}</span> ${tx(device.name)}　<a href="${href('/dashboard', { device: device.id })}" data-close>${t('task.viewDevice')}</a></dd>` : ''}
+          ${device ? html`<dt>${t('task.device')}</dt><dd><span class="tag">${device.tag}</span> ${tx(device.name)}${GAP}<a href="${href('/dashboard', { device: device.id })}" data-close>${t('task.viewDevice')}</a></dd>` : ''}
           ${task.requestId ? html`<dt></dt><dd><a href="${href('/collab')}" data-close>${t('task.fromRequest', { id: task.requestId })}</a></dd>` : ''}</dl>
         <div class="form-row">
           <label class="field"><span>${t('task.status')}</span><select id="tk-status" ${move ? '' : raw('disabled')}>${STATUSES.map((s) => html`<option value="${s}" ${s === task.status ? raw('selected') : ''}>${t(`status.${s}` as I18nKey)}</option>`)}</select></label>
-          <label class="field"><span>${t('task.assignee')}</span><select id="tk-assignee" ${assign ? '' : raw('disabled')}><option value="">${t('common.unassigned')}</option>${(assign ? pool : state.members).map((m) => html`<option value="${m.id}" ${m.id === task.assignee ? raw('selected') : ''}>${tx(m.name)}（${memberLoad(state, m).pct}%）</option>`)}</select></label>
+          <label class="field"><span>${t('task.assignee')}</span><select id="tk-assignee" ${assign ? '' : raw('disabled')}><option value="">${t('common.unassigned')}</option>${(assign ? pool : state.members).map((m) => html`<option value="${m.id}" ${m.id === task.assignee ? raw('selected') : ''}>${tx(m.name)}${paren(`${memberLoad(state, m).pct}%`)}</option>`)}</select></label>
         </div>
-        <label class="row"><input type="checkbox" id="tk-sprint" ${task.sprintId === sprint.id ? raw('checked') : ''} ${plan ? '' : raw('disabled')} />${t('task.sprint')}（${sprint.name}）</label>
+        <label class="row"><input type="checkbox" id="tk-sprint" ${task.sprintId === sprint.id ? raw('checked') : ''} ${plan ? '' : raw('disabled')} />${t('task.sprint')}${paren(sprint.name)}</label>
         ${!move && !assign && !plan ? html`<div class="locked-note">${icon('lock')}<span>${t('task.readonly')}</span></div>` : ''}
       </div>
       <div class="modal-foot"><button type="button" class="btn" data-close>${t('common.close')}</button>${move || assign || plan ? html`<button type="button" class="btn btn-primary" id="tk-save">${t('common.save')}</button>` : ''}</div>`,
@@ -176,8 +176,8 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const gapText = sprint.status !== 'active' ? '' : st.gap > 2 ? t('sprint.behind', { n: st.gap }) : st.gap < -2 ? t('sprint.ahead', { n: -st.gap }) : t('sprint.onPace');
     const todays = state.standups.filter((s) => s.date === DEMO_TODAY);
     return html`
-      <div class="filters"><label class="field"><span>${t('sprint.select')}</span><select id="sprint-select">${[...state.sprints].reverse().map((s) => html`<option value="${s.id}" ${s.id === sprint.id ? raw('selected') : ''}>${s.name}（${t(`sprint.status.${s.status}` as I18nKey)}，${shortDate(s.start)}–${shortDate(s.end)}）</option>`)}</select></label>
-        <p class="muted" style="padding-bottom:6px"><b>${t('sprint.goal')}</b>　${tx(sprint.goal)}</p></div>
+      <div class="filters"><label class="field"><span>${t('sprint.select')}</span><select id="sprint-select">${[...state.sprints].reverse().map((s) => html`<option value="${s.id}" ${s.id === sprint.id ? raw('selected') : ''}>${s.name}${paren(`${t(`sprint.status.${s.status}` as I18nKey)}${comma()}${shortDate(s.start)}–${shortDate(s.end)}`)}</option>`)}</select></label>
+        <p class="muted" style="padding-bottom:6px"><b>${t('sprint.goal')}</b>${GAP}${tx(sprint.goal)}</p></div>
       <dl class="stats">
         <div><dt>${t('sprint.committed')}</dt><dd>${st.committed}<small>${t('common.pts')}</small></dd></div>
         <div><dt>${t('sprint.done')}</dt><dd>${st.done}<small>${t('common.pts')}</small></dd></div>
@@ -193,8 +193,8 @@ export function mount(root: HTMLElement, route: Route): () => void {
       </div>
       ${open ? html`<section class="panel"><div class="panel-head"><h2>${t('sprint.plan')}</h2></div>
         <div class="panel-body grid cols-2">
-          <div><h3 class="section-title">${t('sprint.inSprint', { p: st.committed })}</h3><ul class="plan-list">${inSprint.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">　${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-remove', label: t('sprint.remove'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul></div>
-          <div><h3 class="section-title">${t('sprint.candidates')}</h3>${candidates.length ? html`<ul class="plan-list">${candidates.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">　${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-add', label: t('sprint.add'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul>` : html`<p class="muted small">${t('sprint.noCandidates')}</p>`}</div>
+          <div><h3 class="section-title">${t('sprint.inSprint', { p: st.committed })}</h3><ul class="plan-list">${inSprint.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">${GAP}${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-remove', label: t('sprint.remove'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul></div>
+          <div><h3 class="section-title">${t('sprint.candidates')}</h3>${candidates.length ? html`<ul class="plan-list">${candidates.map((x) => html`<li><span class="tag">${x.id}</span><span class="grow">${tx(x.title)}<span class="small muted">${GAP}${name(x.assignee)}</span></span><span class="pts">${x.points}</span>${actionBtn({ act: 'sprint-add', label: t('sprint.add'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: x.id } })}</li>`)}</ul>` : html`<p class="muted small">${t('sprint.noCandidates')}</p>`}</div>
         </div></section>` : ''}
       <section class="panel"><div class="panel-head"><h2>${t('sprint.standup')}</h2><span class="muted num">${DEMO_TODAY}</span></div>
         <div class="panel-body grid cols-2">

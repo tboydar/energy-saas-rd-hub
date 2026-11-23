@@ -28,8 +28,9 @@ jobs:
       - name: Install browser
         run: bunx playwright install chromium
 
+      # 這台主機沒有 GPU，3D 場景靠軟體算圖。幾個場景同時算會互相拖慢到逾時，所以一次只跑一個測試。
       - name: E2E tests against the deployed site
-        run: bun run test:e2e
+        run: bunx playwright test --workers=1
 
       - name: Upload font report and screenshots
         if: always()

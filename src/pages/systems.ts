@@ -1,7 +1,7 @@
 import { minutesToRecover, postmortemTemplate } from '../ai/postmortem';
 import { can } from '../core/auth';
 import { clock } from '../core/date';
-import { getLang, t, tx, type I18nKey } from '../core/i18n';
+import { comma, GAP, getLang, paren, t, tx, type I18nKey } from '../core/i18n';
 import { advanceIncident, currentIncident, INCIDENT_STAGES, nextStage, triggerIncident } from '../core/incident';
 import { href } from '../core/router';
 import { memberById } from '../core/selectors';
@@ -71,7 +71,7 @@ export function mount(root: HTMLElement): () => void {
     const st = PIPELINE_STAGES.find((p) => p.key === stageKey);
     if (!st) return html`<span class="muted">${t('sys.pickStage')}</span>`;
     const d = store.state.devices.find((x) => x.id === st.deviceId)!;
-    return html`<span class="tag">${d.tag}</span><b>${tx(st.name)}</b><span class="muted">${tx(d.role)}，${d.version}</span>
+    return html`<span class="tag">${d.tag}</span><b>${tx(st.name)}</b><span class="muted">${tx(d.role)}${comma()}${d.version}</span>
       <span style="margin-left:auto" class="row"><button type="button" class="btn btn-sm" data-act="inject">${icon('alert', 15)}${t('sys.inject')}</button>
       <a class="btn btn-sm" href="${href('/dashboard', { device: d.id })}">${icon('focus', 15)}${t('sys.view3d')}</a></span>`;
   }
@@ -102,7 +102,7 @@ export function mount(root: HTMLElement): () => void {
       spec.nodes.push({
         id: stage, x: i * 220, y: i % 2 ? 46 : 0, width: 176,
         title: t(`sys.stage.${stage}` as I18nKey),
-        subtitle: entry ? `${clock(entry.at)}　${who(entry.by)}` : t('sys.pending'),
+        subtitle: entry ? `${clock(entry.at)}${GAP}${who(entry.by)}` : t('sys.pending'),
         tone: i < at ? 'done' : i === at ? (stage === 'closed' ? 'done' : 'active') : 'idle',
         action: stage === upcoming ? {
           id: 'advance', label: t(`sys.act.${stage}` as I18nKey), primary: true,
@@ -124,7 +124,7 @@ export function mount(root: HTMLElement): () => void {
       <section class="panel"><div class="panel-head"><span class="tag">${incident.id}</span><h2>${tx(incident.title)}</h2>${statusChip(incident.stage === 'recovered' || incident.stage === 'postmortem' ? 'ok' : 'crit', incident.severity)}</div>
         <div class="panel-body stack">
           <dl class="kv">
-            <dt>${t('sys.affected')}</dt><dd><span class="tag">${d.tag}</span> ${tx(d.name)}（${tx(d.role)}）　<a href="${href('/dashboard', { device: d.id })}">${t('sys.view3d')}</a></dd>
+            <dt>${t('sys.affected')}</dt><dd><span class="tag">${d.tag}</span> ${tx(d.name)}${paren(tx(d.role))}${GAP}<a href="${href('/dashboard', { device: d.id })}">${t('sys.view3d')}</a></dd>
             <dt>${t('sys.impact')}</dt><dd>${tx(incident.impact)}</dd>
             <dt>${t('sys.rootCause')}</dt><dd>${known ? tx(incident.rootCause) : html`<span class="muted">${t('sys.rootUnknown')}</span>`}</dd>
             <dt>${t('sys.mitigation')}</dt><dd>${known ? tx(incident.mitigation) : html`<span class="muted">—</span>`}</dd>
@@ -134,8 +134,8 @@ export function mount(root: HTMLElement): () => void {
         </div></section>
       <section class="panel"><div class="panel-body stack">
         <label class="field"><span>${t('sys.commander')}</span><select id="commander" ${manage && incident.stage === 'triggered' ? '' : raw('disabled')}>
-          <option value="">${t('sys.pickCommander')}</option>${state.members.filter((m) => m.active).map((m) => html`<option value="${m.id}" ${m.id === incident.commander ? raw('selected') : ''}>${tx(m.name)}（${tx(m.level)}）</option>`)}</select></label>
-        <ul class="timeline">${incident.timeline.map((e) => html`<li><time>${clock(e.at)}</time><span><b>${t(`sys.stage.${e.stage}` as I18nKey)}</b>　${who(e.by)}</span></li>`)}</ul>
+          <option value="">${t('sys.pickCommander')}</option>${state.members.filter((m) => m.active).map((m) => html`<option value="${m.id}" ${m.id === incident.commander ? raw('selected') : ''}>${tx(m.name)}${paren(tx(m.level))}</option>`)}</select></label>
+        <ul class="timeline">${incident.timeline.map((e) => html`<li><time>${clock(e.at)}</time><span><b>${t(`sys.stage.${e.stage}` as I18nKey)}</b>${GAP}${who(e.by)}</span></li>`)}</ul>
       </div></section>
     </div>
     ${incident.stage === 'postmortem' ? html`<section class="panel"><div class="panel-head"><h2>${t('sys.pm')}</h2><span class="muted">${t('sys.pmHint')}</span></div>
@@ -160,7 +160,7 @@ export function mount(root: HTMLElement): () => void {
     if (!incident) {
       setHtml(box, html`<section class="panel"><div class="panel-body row">
         <span class="muted">${t('sys.noActive')}</span>
-        <label class="field" style="margin-left:auto;flex-direction:row;align-items:center;gap:8px"><span>${t('sys.scenario')}</span><select id="scenario">${SCENARIOS.map((s, i) => html`<option value="${i}">${s.severity}　${tx(s.title)}</option>`)}</select></label>
+        <label class="field" style="margin-left:auto;flex-direction:row;align-items:center;gap:8px"><span>${t('sys.scenario')}</span><select id="scenario">${SCENARIOS.map((s, i) => html`<option value="${i}">${s.severity}${GAP}${tx(s.title)}</option>`)}</select></label>
         ${actionBtn({ act: 'simulate', label: t('sys.simulate'), perm: 'incident.manage', cls: 'btn-primary', icon: 'alert' })}
       </div></section>${historyTable()}`);
       return;

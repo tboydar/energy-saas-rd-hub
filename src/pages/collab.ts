@@ -1,7 +1,7 @@
 import { analyze, generateWeeklyReport } from '../ai/weeklyReport';
 import { actorName, can } from '../core/auth';
 import { DEMO_TODAY } from '../core/date';
-import { getLang, plain, t, tx, type I18nKey } from '../core/i18n';
+import { GAP, getLang, plain, t, tx, type I18nKey } from '../core/i18n';
 import { href } from '../core/router';
 import { activeSprint } from '../core/selectors';
 import { store } from '../core/store';
@@ -68,7 +68,7 @@ export function mount(root: HTMLElement): () => void {
     return html`<article class="req" data-card="${r.id}">
       <div><div class="req-meta"><span class="tag">${r.id}</span>${statusChip(chip, t(`collab.status.${r.status}` as I18nKey))}<span class="chip is-plain">${t(`collab.kind.${r.kind}` as I18nKey)}</span><span class="small muted">${tx(r.customer)}</span></div>
         <h3>${tx(r.title)}</h3><p class="muted" style="font-size:14px">${tx(r.desc)}</p>
-        <p class="small muted" style="margin-top:6px">${t('collab.requester')}　${tx(r.requester)}　<span class="num">${r.createdAt}</span></p>
+        <p class="small muted" style="margin-top:6px">${t('collab.requester')}${GAP}${tx(r.requester)}${GAP}<span class="num">${r.createdAt}</span></p>
         ${r.taskId ? html`<p style="margin-top:8px"><a class="btn btn-sm" href="${href('/projects', { tab: 'kanban', task: r.taskId })}">${icon('link', 15)}${t('collab.viewTask', { id: r.taskId })}</a></p>` : ''}</div>
       <div class="stack" style="gap:8px">${slider('value')}${slider('effort')}${slider('risk')}
         <div class="score" title="${t('collab.scoreHint')}"><span class="small muted">${t('collab.score')}</span><b data-score="${r.id}">${s.toFixed(1)}</b><span class="small" data-advice="${r.id}">${advice}</span></div>

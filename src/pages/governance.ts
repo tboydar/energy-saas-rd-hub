@@ -1,6 +1,6 @@
 import { actorId, actorName, can } from '../core/auth';
 import { DEMO_TODAY } from '../core/date';
-import { plain, t, tx, type I18nKey } from '../core/i18n';
+import { GAP, plain, t, tx, type I18nKey } from '../core/i18n';
 import { activeRun, approveRelease, finishRunningStage, retryFailedStage, STAGE_MS, startRun } from '../core/pipeline';
 import { href, type Route } from '../core/router';
 import { memberById } from '../core/selectors';
@@ -35,10 +35,10 @@ export function mount(root: HTMLElement, route: Route): () => void {
     return html`<div class="row" style="justify-content:flex-end">${actionBtn({ act: 'adr-new', label: t('adr.new'), perm: 'adr.write', icon: 'plus', cls: 'btn-primary' })}</div>
       <div class="adr-grid">
         <section class="panel" style="overflow:hidden">${state.adrs.map((x) => html`<button type="button" class="adr-item" data-adr="${x.id}" aria-current="${String(x.id === a.id)}">
-          <span class="row" style="justify-content:space-between"><span class="tag">${x.id}</span>${adrChip(x)}</span><b>${tx(x.title)}</b><span class="small muted"><span class="num">${x.date}</span>　${name(x.author)}</span></button>`)}</section>
+          <span class="row" style="justify-content:space-between"><span class="tag">${x.id}</span>${adrChip(x)}</span><b>${tx(x.title)}</b><span class="small muted"><span class="num">${x.date}</span>${GAP}${name(x.author)}</span></button>`)}</section>
         <section class="panel"><div class="panel-head"><span class="tag">${a.id}</span><h2>${tx(a.title)}</h2>
             <label class="row small"><span class="muted">${t('adr.status')}</span><select id="adr-status" ${write ? '' : raw('disabled')}>${ADR_STATUSES.map((s) => html`<option value="${s}" ${s === a.status ? raw('selected') : ''}>${t(`adr.status.${s}` as I18nKey)}</option>`)}</select></label></div>
-          <div class="panel-body adr-body"><p class="small muted" style="margin-bottom:12px">${t('adr.author')}　${name(a.author)}　<span class="num">${a.date}</span></p>
+          <div class="panel-body adr-body"><p class="small muted" style="margin-bottom:12px">${t('adr.author')}${GAP}${name(a.author)}${GAP}<span class="num">${a.date}</span></p>
             <h3>${t('adr.context')}</h3><p>${tx(a.context)}</p><h3>${t('adr.decision')}</h3><p>${tx(a.decision)}</p>
             <h3>${t('adr.consequences')}</h3><p>${tx(a.consequences)}</p><h3>${t('adr.alternatives')}</h3><p>${tx(a.alternatives)}</p></div></section>
       </div>`;
@@ -147,7 +147,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
       <section class="panel"><div class="panel-head"><h2>${t('debt.title')}</h2><span class="muted">${t('debt.hint')}</span></div>
         <div class="panel-body matrix-wrap"><div>${matrix(state.debts)}</div>
           <div class="table-wrap"><table class="table"><tbody>${[...state.debts].sort((a, b) => b.impact / b.cost - a.impact / a.cost).map((d) => html`<tr>
-            <td><span class="tag">${d.id}</span></td><td><b>${tx(d.title)}</b><div class="small muted">${tx(d.note)}</div><div class="small muted">${tx(SQUADS[d.squad])}　${t('debt.impact')} ${d.impact}　${t('debt.cost')} ${d.cost}</div></td>
+            <td><span class="tag">${d.id}</span></td><td><b>${tx(d.title)}</b><div class="small muted">${tx(d.note)}</div><div class="small muted">${tx(SQUADS[d.squad])}${GAP}${t('debt.impact')} ${d.impact}${GAP}${t('debt.cost')} ${d.cost}</div></td>
             <td>${d.status === 'open' ? actionBtn({ act: 'debt-plan', label: t('debt.toBacklog'), perm: 'sprint.plan', cls: 'btn-sm', data: { id: d.id } }) : statusChip(d.status === 'paid' ? 'ok' : 'info', t(`debt.status.${d.status}` as I18nKey))}</td></tr>`)}</tbody></table></div>
         </div></section>`;
   }
@@ -162,7 +162,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
     const role = t(`role.${store.prefs.role}` as I18nKey);
     const tone: Record<string, FlowTone> = { pending: 'idle', running: 'active', pass: 'done', fail: 'crit', waiting: 'warn' };
     const stage = (n: string) => run?.stages.find((s) => s.name === n);
-    spec.nodes.push({ id: 'commit', x: 0, y: 40, width: 170, title: t('cicd.stage.commit'), subtitle: run ? `${run.commit}　${name(run.author)}` : '', tone: run ? 'done' : 'idle' });
+    spec.nodes.push({ id: 'commit', x: 0, y: 40, width: 170, title: t('cicd.stage.commit'), subtitle: run ? `${run.commit}${GAP}${name(run.author)}` : '', tone: run ? 'done' : 'idle' });
     const ids = ['build', 'test', 'staging'] as const;
     ids.forEach((id, i) => {
       const s = stage(id);
@@ -204,7 +204,7 @@ export function mount(root: HTMLElement, route: Route): () => void {
   function historyHtml(): Safe {
     return html`<div class="panel-head"><h2>${t('cicd.history')}</h2></div><div class="table-wrap"><table class="table">
       <thead><tr><th>${t('cicd.col.run')}</th><th>${t('cicd.col.change')}</th><th>${t('cicd.col.stages')}</th><th class="num">${t('cicd.col.attempts')}</th><th>${t('cicd.col.approver')}</th></tr></thead>
-      <tbody>${store.state.pipelineRuns.slice(0, 8).map((r) => html`<tr><td><span class="tag">${r.id}</span></td><td>${tx(r.title)}<div class="small muted"><span class="num">${r.commit}</span>　${name(r.author)}</div></td>
+      <tbody>${store.state.pipelineRuns.slice(0, 8).map((r) => html`<tr><td><span class="tag">${r.id}</span></td><td>${tx(r.title)}<div class="small muted"><span class="num">${r.commit}</span>${GAP}${name(r.author)}</div></td>
         <td><span class="stage-dots" role="img" aria-label="${r.stages.map((s) => `${s.name} ${s.status}`).join(', ')}">${r.stages.map((s) => html`<i class="is-${s.status}" title="${s.name}: ${t(`cicd.st.${s.status}` as I18nKey)}"></i>`)}</span></td>
         <td class="num">${r.attempts}</td><td>${r.approvedBy ? name(r.approvedBy) : '—'}</td></tr>`)}</tbody></table>`;
   }

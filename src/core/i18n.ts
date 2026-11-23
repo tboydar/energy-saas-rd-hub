@@ -41,6 +41,22 @@ export function plain(text: string): L10n {
   return { zh: text, en: text };
 }
 
+// 寫在樣板裡的標點要跟著語言換：中文用全形，英文用半形。
+// 直接在樣板裡打「，」或「（）」的話，英文介面就會混進全形符號。
+
+/** 逗號。 */
+export function comma(): string {
+  return lang === 'zh' ? '，' : ', ';
+}
+
+/** 把一段補充說明放進括號。 */
+export function paren(text: string | number): string {
+  return lang === 'zh' ? `（${text}）` : ` (${text})`;
+}
+
+/** 同一行兩段資訊之間的空白：一個全形字寬，用的是中英文字型都有的 EM SPACE。 */
+export const GAP = '\u2003';
+
 /** 把幾個完整的句子接成一段：中文直接相連，英文中間加空格。 */
 export function sentences(...parts: (string | false | undefined)[]): string {
   return parts.filter(Boolean).join(lang === 'zh' ? '' : ' ');

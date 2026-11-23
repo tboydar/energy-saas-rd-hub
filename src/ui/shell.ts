@@ -1,5 +1,5 @@
 import { can, persona } from '../core/auth';
-import { t, tx, type I18nKey } from '../core/i18n';
+import { getLang, t, tx, type I18nKey } from '../core/i18n';
 import { ROLES, type Perm } from '../core/rbac';
 import { currentRoute, href, onRouteChange, type Route } from '../core/router';
 import { activeIncident } from '../core/selectors';
@@ -63,8 +63,8 @@ export function mountShell(app: HTMLElement): void {
           <select id="role-select">${ROLES.map((r) => html`<option value="${r}" ${r === role ? raw('selected') : ''}>${t(`role.${r}` as I18nKey)}</option>`)}</select>
         </div>
         <div class="seg" role="group" aria-label="${t('top.lang')}">
-          <button type="button" data-lang="zh" aria-pressed="${String(lang === 'zh')}">中文</button>
-          <button type="button" data-lang="en" aria-pressed="${String(lang === 'en')}">EN</button>
+          <button type="button" data-lang="zh" lang="zh-Hant" aria-pressed="${String(lang === 'zh')}">中文</button>
+          <button type="button" data-lang="en" lang="en" aria-pressed="${String(lang === 'en')}">EN</button>
         </div>
         <button type="button" class="btn" id="reset-btn">${icon('reset', 16)}${t('top.reset')}</button>
       </div>
@@ -81,7 +81,7 @@ export function mountShell(app: HTMLElement): void {
     cleanup = undefined;
     const mine = ++token;
     renderSide();
-    document.title = `${def ? t(def.nav) : t('notfound.title')}｜${t('app.name')}`;
+    document.title = `${def ? t(def.nav) : t('notfound.title')}${getLang() === 'zh' ? '｜' : ' | '}${t('app.name')}`;
     if (!def) {
       setHtml(view, html`<div class="page"><div class="notice"><h1>${t('notfound.title')}</h1><a class="btn" href="${href('/dashboard')}">${t('denied.back')}</a></div></div>`);
       return;

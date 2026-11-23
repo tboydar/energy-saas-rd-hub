@@ -78,7 +78,7 @@ bun run build && bun run test:e2e   # E2E 測試（會自己啟動預覽伺服�
 ```
 
 - **單元測試**（`tests/unit/`，用 `bun test`）：固定 seed 的亂數與假資料的決定性、z-score 異常偵測、負載與 Sprint 統計、RBAC 矩陣與權限判斷、兩份 i18n 字典是否一致、規則式的週報與範本、事件與 Pipeline 的狀態機、HTML 樣板的跳脫。
-- **E2E 測試**（`tests/e2e/`，用 Playwright）：照驗收標準寫的，包含 5 種角色的選單與權限、Kanban 拖曳、重新整理後保留與重設、3D 點擊設備聚焦、事件走到事後檢討、需求轉任務、週報、CI/CD 流程。
+- **E2E 測試**（`tests/e2e/`，用 Playwright）：照驗收標準寫的，包含 5 種角色的選單與權限、Kanban 拖曳、重新整理後保留與重設、3D 點擊設備聚焦、事件走到事後檢討、需求轉任務、週報、CI/CD 流程，以及英文介面沒有殘留的中文或全形標點。
 - 本機的 E2E 直接使用已安裝的 Chrome 瀏覽器。沒有的話先執行 `bunx playwright install chromium`，再用 `CI=1 bun run test:e2e`。
 - CI 的機器沒有 GPU，3D 場景靠軟體算圖。本機要重現同樣的情況：`E2E_SOFTWARE_GL=1 bun run test:e2e`。
 - **資料來源的檢查**：單元測試確認網站的程式裡沒有任何網址，也沒有連線、Cookie 或定位的 API；E2E 走過每一頁，確認瀏覽器只向網站本身拿靜態檔案。

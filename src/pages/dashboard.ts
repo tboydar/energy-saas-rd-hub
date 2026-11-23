@@ -34,7 +34,7 @@ function meter(key: MetricKey): Safe {
   const diff = Math.round((cur - series[series.length - 2]) * 10) / 10;
   const good = meta.better === 'higher' ? diff > 0 : diff < 0;
   const cls = diff === 0 ? 'is-flat' : good ? 'is-good' : 'is-bad';
-  const arrow = diff === 0 ? '＝' : diff > 0 ? '▲' : '▼';
+  const arrow = diff === 0 ? '=' : diff > 0 ? '▲' : '▼';
   return html`<div class="meter">
     <div class="meter-label">${tx(meta.label)}</div>
     <div class="meter-value">${cur}<small>${tx(meta.unit)}</small></div>
