@@ -8,7 +8,10 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc -p tests/tsconfig.json",
+    "test": "bun test tests/unit",
+    "test:e2e": "playwright test",
+    "check": "bun run typecheck && bun run test"
   },
   "dependencies": {
     "@fontsource/barlow-semi-condensed": "^5.3.0",
@@ -19,6 +22,9 @@
     "three": "^0.187.0"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "^21.0.4",
+    "@playwright/test": "^1.65.1",
+    "@types/bun": "^1.4.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.187.0",

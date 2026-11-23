@@ -4,3 +4,5 @@ dist
 *.local
 .vite
 todo_*.md
+test-results
+playwright-report

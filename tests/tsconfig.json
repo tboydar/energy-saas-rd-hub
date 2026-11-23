@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "bun",
+      "vite/client"
+    ],
+    "noEmit": true
+  },
+  "include": [
+    "./unit",
+    "./e2e",
+    "./setup.ts",
+    "../playwright.config.ts",
+    "../src"
+  ]
+}

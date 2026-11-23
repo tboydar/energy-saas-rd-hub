@@ -69,11 +69,24 @@ bun run preview    # 預覽建置結果
 
 也可以用 npm：`npm install && npm run build`。
 
+## 測試
+
+```bash
+bun run check        # 型別檢查（含測試程式）＋ 單元測試
+bun run test         # 只跑單元測試
+bun run build && bun run test:e2e   # E2E 測試（會自己啟動預覽伺服器）
+```
+
+- **單元測試**（`tests/unit/`，用 `bun test`）：固定 seed 的亂數與假資料的決定性、z-score 異常偵測、負載與 Sprint 統計、RBAC 矩陣與權限判斷、兩份 i18n 字典是否一致、規則式的週報與範本、事件與 Pipeline 的狀態機、HTML 樣板的跳脫。
+- **E2E 測試**（`tests/e2e/`，用 Playwright）：照驗收標準寫的，包含 5 種角色的選單與權限、Kanban 拖曳、重新整理後保留與重設、3D 點擊設備聚焦、事件走到事後檢討、需求轉任務、週報、CI/CD 流程。
+- 本機的 E2E 直接使用已安裝的 Chrome 瀏覽器。沒有的話先執行 `bunx playwright install chromium`，再用 `CI=1 bun run test:e2e`。
+- 同一套 E2E 可以對已部署的網站跑：`E2E_BASE_URL=https://<你的帳號>.github.io/<repo 名稱>/ bun run test:e2e`。
+
 ## 部署到 GitHub Pages
 
 1. 把專案推到 GitHub（預設分支 `main`）。
 2. 到 repo 的 **Settings → Pages**，把 **Source** 設為 **GitHub Actions**。
-3. 之後每次推送到 `main`，`.github/workflows/deploy.yml` 會自動執行 `bun install` → `bun run build` → 部署 `dist/`。
+3. 之後每次推送到 `main`，`.github/workflows/deploy.yml` 會依序執行：安裝套件 → 型別檢查與單元測試 → 建置 → E2E 測試 → 部署 `dist/`。任何一步失敗就不會部署。
 4. 完成後即可開啟 `https://<你的帳號>.github.io/<repo 名稱>/`。
 
 **base 路徑**：`vite.config.ts` 的 `base` 預設是相對路徑 `./`，路由用 hash（`#/dashboard`）。
@@ -89,6 +102,11 @@ repo 換名字或放在別的子路徑都能開啟，重新整理也不會 404�
 │   └── screenshots/               截圖
 ├── index.html
 ├── vite.config.ts                 base 設定
+├── playwright.config.ts           E2E 測試設定
+├── bunfig.toml                    bun test 設定
+├── tests/
+│   ├── unit/                      單元測試（bun test）
+│   └── e2e/                       E2E 測試（Playwright）
 └── src/
     ├── main.ts                    進入點
     ├── core/                      型別、store（localStorage）、RBAC、i18n、路由、推導資料、事件與 Pipeline 狀態機
