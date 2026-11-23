@@ -1,5 +1,6 @@
-import { t, type I18nKey } from '../core/i18n';
+import { comma, t, type I18nKey } from '../core/i18n';
 import { href, navigate } from '../core/router';
+import { APP_COMMIT, APP_VERSION } from '../core/version';
 import type { FlowSpec } from '../flow/FlowIsland';
 import { $, html, setHtml } from '../ui/dom';
 import { attachFlow } from '../ui/flowMount';
@@ -44,7 +45,8 @@ export function mount(root: HTMLElement): () => void {
     <section class="stack" style="gap:6px"><h2 class="section-title">${t('about.sdlc')}</h2><p class="muted small">${t('about.sdlcHint')}</p><div class="flow" id="sdlc-flow" style="height:400px"></div></section>
     <div class="grid cols-2">
       <section class="panel"><div class="panel-head"><h2>${t('about.script')}</h2></div><div class="panel-body"><ol class="steps">${STEPS.map(([path, query], i) => html`<li><span class="n">${i + 1}</span><span>${t(`about.step.${i + 1}` as I18nKey)}</span><a class="btn btn-sm" href="${href(path, query)}">${t('about.open')}</a></li>`)}</ol></div></section>
-      <section class="panel"><div class="panel-head"><h2>${t('about.tech')}</h2></div><div class="panel-body"><ul class="tech-list">${[1, 2, 3, 4, 5, 6].map((n) => html`<li>${t(`about.tech.${n}` as I18nKey)}</li>`)}</ul></div></section>
+      <section class="panel"><div class="panel-head"><h2>${t('about.tech')}</h2></div><div class="panel-body"><ul class="tech-list">${[1, 2, 3, 4, 5, 6].map((n) => html`<li>${t(`about.tech.${n}` as I18nKey)}</li>`)}</ul>
+        <p class="muted small" id="about-version" style="margin-top:14px"><b>${t('app.version')} <span class="num">${APP_VERSION}</span></b>${APP_COMMIT ? `${comma()}commit ${APP_COMMIT}` : ''}<br />${t('about.versionHint')}</p></div></section>
     </div>
   </div>`);
 

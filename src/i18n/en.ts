@@ -8,6 +8,8 @@ export const en: Record<I18nKey, string> = {
   "app.short": "R&D Hub",
   "app.product": "Energy SaaS",
   "app.fictional": "All data is fictional",
+  "app.version": "Version",
+  "about.versionHint": "The version is the date in Taiwan time plus that day's CI run number. Every CI run adds one.",
 
   // nav
   "nav.dashboard": "Overview",

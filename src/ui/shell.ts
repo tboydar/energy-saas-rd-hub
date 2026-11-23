@@ -1,5 +1,6 @@
 import { can, persona } from '../core/auth';
 import { getLang, t, tx, type I18nKey } from '../core/i18n';
+import { APP_VERSION } from '../core/version';
 import { ROLES, type Perm } from '../core/rbac';
 import { currentRoute, href, onRouteChange, type Route } from '../core/router';
 import { activeIncident } from '../core/selectors';
@@ -43,7 +44,7 @@ export function mountShell(app: HTMLElement): void {
       <nav class="nav" aria-label="${t('nav.label')}">
         ${PAGES.filter((p) => can(p.perm)).map((p) => html`<a href="${href(p.path)}" class="${p.path === active ? 'is-active' : ''}" ${p.path === active ? raw('aria-current="page"') : ''} title="${t(p.nav)}">${icon(p.icon)}<span>${t(p.nav)}</span></a>`)}
       </nav>
-      <p class="sidebar-foot">${t('app.fictional')}</p>`);
+      <p class="sidebar-foot">${t('app.fictional')}<span class="ver num" id="app-version" title="${t('app.version')}">${APP_VERSION}</span></p>`);
   }
 
   function renderTop(): void {

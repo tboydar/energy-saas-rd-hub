@@ -7,6 +7,8 @@ export const zh = {
   "app.short": "研發管理中心",
   "app.product": "Energy SaaS",
   "app.fictional": "所有資料皆為虛構",
+  "app.version": "版本",
+  "about.versionHint": "版號是台灣時間的日期，加上當天第幾次 CI。每跑一次 CI 就加一。",
 
   // nav
   "nav.dashboard": "總覽",

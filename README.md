@@ -97,6 +97,16 @@ bun run build && bun run test:e2e   # E2E 測試（會自己啟動預覽伺服�
 repo 換名字或放在別的子路徑都能開啟，重新整理也不會 404。
 若要改用絕對路徑，建置時指定 `VITE_BASE=/your-repo/ bun run build` 即可。
 
+## 版號
+
+每次建置都會帶一個版號，格式是 `v<台灣日期>.<當天第幾次 CI>`，例如 `v20261123.3`。
+
+- 每跑一次 CI 就加一，失敗或被取消的那幾次也算，隔天從 1 開始。
+- 顯示在側欄底部與「關於這個 Demo」頁（連同 commit），也寫在 `index.html` 的 `<meta name="app-version">`。
+- 不用開瀏覽器就能查線上是哪一版：`curl -s https://<你的帳號>.github.io/<repo 名稱>/ | grep app-version`
+- 本機建置的版號是 `v<今天>.dev`。要在本機重現某一版，建置時指定 `APP_VERSION=v20261123.3 bun run build`。
+- 算法在 `scripts/app-version.ts`，由 `vite.config.ts` 在建置時呼叫。
+
 ## 資料夾結構
 
 ```
@@ -113,7 +123,7 @@ repo 換名字或放在別的子路徑都能開啟，重新整理也不會 404�
 ├── tests/
 │   ├── unit/                      單元測試（bun test）
 │   └── e2e/                       E2E 測試（Playwright）
-├── scripts/                       假名稱查核（check-names.ts）
+├── scripts/                       版號（app-version.ts）、假名稱查核（check-names.ts）
 └── src/
     ├── main.ts                    進入點
     ├── core/                      型別、store（localStorage）、RBAC、i18n、路由、推導資料、事件與 Pipeline 狀態機

@@ -61,6 +61,7 @@ a { color: inherit; }
 .nav a:hover { background: var(--steel-2); color: #fff; }
 .nav a.is-active { background: var(--steel-2); color: #fff; border-left-color: var(--yellow); }
 .sidebar-foot { margin-top: auto; padding: 0 8px; font-size: 13px; color: #b3c1c7; line-height: 1.5; }
+.sidebar-foot .ver { display: block; margin-top: 2px; }
 
 .main { min-width: 0; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
