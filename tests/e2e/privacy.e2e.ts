@@ -7,14 +7,14 @@ import { open } from './helpers';
 const PAGES = ['/dashboard', '/team', '/projects', '/governance', '/systems', '/collab', '/rbac', '/about'];
 
 test('走過每一頁，瀏覽器只向網站本身拿靜態檔案', async ({ page, baseURL }) => {
-  test.slow(); // 每一頁都要等延後載入的程式要完
+  test.slow(); // 每一頁都要等延後載入的程式載完
   const origin = new URL(baseURL ?? 'http://localhost/').origin;
   const requests: { url: string; method: string; type: string }[] = [];
   page.on('request', (request) => requests.push({ url: request.url(), method: request.method(), type: request.resourceType() }));
 
   for (const hash of PAGES) {
     await open(page, hash);
-    // 圖表、流程圖、3D 場景的程式是進到頁面後才載入的，等它們都要完
+    // 圖表、流程圖、3D 場景的程式是進到頁面後才載入的，等它們都載完
     await page.waitForTimeout(1500);
     await page.waitForLoadState('networkidle');
   }

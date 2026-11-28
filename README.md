@@ -58,7 +58,7 @@
 
 ## 本機啟動
 
-需要 [bun](https://bun.sh)。
+建議使用 [bun](https://bun.sh)：開發、測試與 CI 都以 bun 為準。
 
 ```bash
 bun install
@@ -67,7 +67,7 @@ bun run build      # 型別檢查（tsc）＋ 正式建置，輸出到 dist/
 bun run preview    # 預覽建置結果
 ```
 
-也可以用 npm：`npm install && npm run build`。
+只看畫面或建置也可以用 npm：`npm install` 後可執行 `npm run dev`、`npm run build`、`npm run preview`。本機測試仍需要 bun：`test` 與 `check` 直接呼叫 bun，`test:e2e` 也會用 bun 啟動預覽伺服器。
 
 ## 測試
 
@@ -85,6 +85,18 @@ bun run build && bun run test:e2e   # E2E 測試（會自己啟動預覽伺服�
 - **名稱查核**：`bun run check:names` 會從假資料取出所有組織名與人名，查有沒有剛好同名的真實公司或知名人物。來源是經濟部商工登記的公司登記（官方代碼表的 33 種狀態全查）與分公司登記、g0v 台灣公司資料（含商業登記）、GLEIF、Wikidata 與中文維基百科。約需 10 分鐘。假資料的名稱改了以後，單元測試會提醒重新查核。
 - **Windows 檢查**：到 GitHub 的 Actions 頁面手動執行「Windows browser check」，會在 Windows 上對已部署的網站跑同一套 E2E，並上傳實際用到的字型清單與截圖。
 - 同一套 E2E 可以對已部署的網站跑：`E2E_BASE_URL=https://<你的帳號>.github.io/<repo 名稱>/ bun run test:e2e`。
+
+## 常用環境變數
+
+| 變數 | 用途 |
+| --- | --- |
+| `VITE_BASE` | 建置時指定網站 base path；預設是相對路徑 `./` |
+| `APP_VERSION` | 建置時直接指定版號，用來重現某一版 |
+| `APP_COMMIT` | 建置時覆寫寫入 `<meta>` 與「關於」頁的 commit 字串 |
+| `E2E_BASE_URL` | Playwright 改對已部署的網站執行 |
+| `E2E_SOFTWARE_GL` | 本機用軟體算圖，重現 CI 無 GPU 的 WebGL 環境 |
+| `E2E_CPU_THROTTLE` | 放慢頁面 CPU；例如 `6` 代表六分之一速度 |
+| `FONT_REPORT_DIR` | 字型 E2E 額外輸出字型清單與截圖的資料夾 |
 
 ## 部署到 GitHub Pages
 
@@ -117,16 +129,20 @@ repo 換名字或放在別的子路徑都能開啟，重新整理也不會 404�
 │   ├── demo-script.md             3 分鐘 Demo 腳本
 │   └── screenshots/               截圖
 ├── index.html
-├── vite.config.ts                 base 設定
+├── package.json                   套件與 scripts
+├── tsconfig.json                  TypeScript 設定
+├── vite.config.ts                 base 設定與版號注入
 ├── playwright.config.ts           E2E 測試設定
 ├── bunfig.toml                    bun test 設定
+├── public/                        靜態資產（favicon）
 ├── tests/
+│   ├── setup.ts                   單元測試的瀏覽器環境
 │   ├── unit/                      單元測試（bun test）
 │   └── e2e/                       E2E 測試（Playwright）
-├── scripts/                       版號（app-version.ts）、假名稱查核（check-names.ts）
+├── scripts/                       版號（app-version.ts）、假名稱查核（check-names.ts、mock-names.ts）
 └── src/
     ├── main.ts                    進入點
-    ├── core/                      型別、store（localStorage）、RBAC、i18n、路由、推導資料、事件與 Pipeline 狀態機
+    ├── core/                      型別、store（localStorage）、RBAC、i18n、路由、衍生數字（selectors）、事件與 Pipeline 狀態機
     ├── i18n/                      zh.ts／en.ts 字典（en 少一個 key，tsc 就會報錯）
     ├── mock/                      假資料：members、projects、tasks、sprints、okrs、adrs、incidents、metrics、devices…與 seeded RNG
     ├── sim/                       即時模擬引擎與 z-score 異常偵測

@@ -170,7 +170,7 @@ export const en: Record<I18nKey, string> = {
   "team.aiDraft": "Draft with AI",
   "team.saveDraft": "Save draft",
   "team.draftSaved": "Feedback draft saved",
-  "team.draftMade": "First draft ready. Edit it against what you observed",
+  "team.draftMade": "First draft ready. Edit it based on what you observed",
   "team.private": "Only roles with the \"{perm}\" permission can see 1:1 notes, feedback and growth plans.",
   "team.manage": "Manage member",
   "team.manageTitle": "Manage member: {name}",
@@ -181,7 +181,7 @@ export const en: Record<I18nKey, string> = {
   "team.memberSaved": "Member updated",
   "team.org.lead": "Node color shows load. Click a person for details.",
   "team.hiring.lead": "Candidates are shown by alias only.",
-  "team.hiring.open": "Open {n} {n|day|days}",
+  "team.hiring.open": "Open for {n} {n|day|days}",
   "team.hiring.candidates": "Candidates",
   "team.hiring.position": "Role",
   "team.hiring.stage": "Stage",
@@ -328,7 +328,7 @@ export const en: Record<I18nKey, string> = {
   "sys.col.metric": "Metric",
   "sys.col.value": "Value",
   "sys.incident": "Incident management",
-  "sys.incidentLead": "Until an incident is restored, the affected device runs slow and the 3D factory flashes red with gray smoke.",
+  "sys.incidentLead": "Until the service is restored, the affected device slows down and the 3D factory flashes red with gray smoke.",
   "sys.scenario": "Scenario",
   "sys.simulate": "Simulate an incident",
   "sys.noActive": "No incident is open right now.",
@@ -473,7 +473,7 @@ export const en: Record<I18nKey, string> = {
   "review.st.changes": "Changes requested",
   "review.toast.approved": "{id} approved; task {task} moved to Done",
   "review.toast.approvedPlain": "{id} approved",
-  "review.toast.changes": "Changes requested on {id}; task {task} is back In Progress",
+  "review.toast.changes": "Changes requested on {id}; task {task} moved back to In Progress",
   "review.toast.changesPlain": "Changes requested on {id}",
 
   // quality
@@ -537,7 +537,7 @@ export const en: Record<I18nKey, string> = {
   "cicd.busy": "A pipeline is already running",
 
   // rbac
-  "rbac.editHint": "A tick takes effect at once and is saved in this browser. Locked cells cannot be cleared.",
+  "rbac.editHint": "Changes take effect immediately and are saved in this browser. Locked cells cannot be cleared.",
   "rbac.readonly": "Only roles with the \"{perm}\" permission can change this table. You are signed in as \"{role}\", so it is read-only.",
   "rbac.reset": "Restore default matrix",
   "rbac.resetDone": "Default permissions restored",

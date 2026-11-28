@@ -6,7 +6,7 @@ type Seed = [id: string, status: AdrStatus, date: string, author: string, title:
 
 const SEEDS: Seed[] = [
   ['ADR-001', 'accepted', '2026-08-12', 'm1', ['時序資料採熱、溫、冷三層儲存', 'Three-tier hot, warm and cold storage for time series'],
-    ['單日 3 億筆原始資料全部放在高速儲存，成本每季成長 30%，但 90% 的查詢只看最近 7 天。', 'Keeping 300M raw points a day on fast storage grows cost 30% a quarter, yet 90% of queries only touch the last 7 days.'],
+    ['單日 3 億筆原始資料全部放在高速儲存，成本每季成長 30%，但 90% 的查詢只看最近 7 天。', 'Keeping 300M raw points a day on fast storage increases storage cost by 30% a quarter, yet 90% of queries only touch the last 7 days.'],
     ['最近 7 天留在列式時序資料庫；7 到 90 天降採樣為 5 分鐘粒度；90 天以上轉成 Parquet 放物件儲存。', 'Keep 7 days in the columnar time-series DB, downsample 7–90 days to 5-minute grain, and move older data to Parquet on object storage.'],
     ['儲存成本預估下降 40%；跨層查詢需要一層查詢路由，冷資料查詢會變慢到秒級。', 'Storage cost should drop about 40%. Cross-tier queries need a routing layer, and cold queries slow to seconds.'],
     ['全部留在熱層（成本不可持續）；只保留 90 天（不符合客戶合約的 5 年保存）。', 'Keep everything hot (unsustainable cost); retain only 90 days (breaks the 5-year retention in customer contracts).']],
@@ -16,7 +16,7 @@ const SEEDS: Seed[] = [
     ['報表數字可重現；即時儀表板最多延後 10 分鐘才定案，需要在介面標示「暫定值」。', 'Report numbers become reproducible. Live dashboards settle up to 10 minutes late, so the UI must mark provisional values.'],
     ['處理時間彙總（簡單但不準）；無限等待晚到資料（狀態無限成長）。', 'Processing-time aggregation (simple but wrong); waiting forever for late data (unbounded state).']],
   ['ADR-003', 'accepted', '2026-09-24', 'm3', ['多租戶採共用叢集加租戶鍵分區', 'Multi-tenancy on a shared cluster with tenant-key partitioning'],
-    ['報表 SaaS 化後租戶數會從 12 家成長到上百家，逐一部署獨立環境無法維運。', 'Once reporting is SaaS, tenants grow from 12 to hundreds. One environment per tenant is not operable.'],
+    ['報表 SaaS 化後租戶數會從 12 家成長到上百家，逐一部署獨立環境無法維運。', 'Once reporting becomes SaaS, tenants grow from 12 to hundreds. One environment per tenant is not operable.'],
     ['所有租戶共用叢集，資料以租戶鍵分區並在查詢層強制過濾；大型租戶可升級為獨立節點池。', 'All tenants share a cluster. Data is partitioned by tenant key with enforced filtering in the query layer; large tenants can move to dedicated node pools.'],
     ['維運成本大幅下降；必須投資租戶隔離測試與「吵鬧鄰居」的資源配額。', 'Operations cost drops sharply. We must invest in isolation tests and quotas against noisy neighbors.'],
     ['每租戶獨立環境（隔離最好但成本線性成長）；每租戶獨立資料庫（遷移與升級困難）。', 'One environment per tenant (best isolation, linear cost); one database per tenant (painful migrations and upgrades).']],

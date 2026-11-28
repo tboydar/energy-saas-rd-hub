@@ -25,7 +25,7 @@ export function buildCandidates(): Candidate[] {
     { id: 'c1', alias: L('候選人 A', 'Candidate A'), positionId: 'pos1', stage: 'final', note: L('串流處理經驗紮實，系統設計面試表現突出', 'Strong streaming background, stood out in system design') },
     { id: 'c2', alias: L('候選人 B', 'Candidate B'), positionId: 'pos1', stage: 'tech', note: L('資料建模佳，需確認 on-call 意願', 'Good data modeling; confirm willingness for on-call') },
     { id: 'c3', alias: L('候選人 C', 'Candidate C'), positionId: 'pos2', stage: 'tech', note: L('有時序預測專案經驗', 'Has shipped time-series forecasting projects') },
-    { id: 'c4', alias: L('候選人 D', 'Candidate D'), positionId: 'pos2', stage: 'screen', note: L('轉職背景，學習曲線快', 'Career changer with a steep learning curve') },
+    { id: 'c4', alias: L('候選人 D', 'Candidate D'), positionId: 'pos2', stage: 'screen', note: L('轉職背景，學習速度快', 'Career changer who learns quickly') },
     { id: 'c5', alias: L('候選人 E', 'Candidate E'), positionId: 'pos3', stage: 'screen', note: L('資料視覺化作品集完整', 'Solid data-visualization portfolio') },
     { id: 'c6', alias: L('候選人 F', 'Candidate F'), positionId: 'pos1', stage: 'offer', note: L('已口頭接受，等待到職日確認', 'Verbally accepted; start date pending') },
   ];
